@@ -1,0 +1,111 @@
+{
+  "name": "use-rx-hooks",
+  "version": "1.0.0",
+  "description": "Collection of React hooks with RxJS",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "sideEffects": false,
+  "files": [
+    "lib/",
+    "esm/"
+  ],
+  "types": "lib/index.d.ts",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "start": "yarn storybook",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "tslint 'src/**/*.{ts,tsx}' -t verbose",
+    "lint:fix": "yarn lint --fix",
+    "lint:types": "tsc --noEmit",
+    "build:cjs": "tsc",
+    "build:es": "tsc -m esNext --outDir esm",
+    "build": "yarn build:cjs && yarn build:es",
+    "clean": "rimraf lib storybook-static esm",
+    "storybook": "start-storybook -p 6006",
+    "storybook:build": "build-storybook",
+    "storybook:upload": "gh-pages -d storybook-static --git \"$(which git)\"",
+    "storybook:clean": "rimraf storybook-static",
+    "release": "semantic-release",
+    "build-storybook": "build-storybook"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint:types && lint-staged",
+      "pre-push": "yarn lint && yarn clean && yarn build && yarn test"
+    }
+  },
+  "author": "@Pong420",
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "rxjs": "6.5.3"
+  },
+  "devDependencies": {
+    "@babel/core": "7.6.0",
+    "@babel/plugin-syntax-dynamic-import": "7.2.0",
+    "@babel/preset-env": "7.6.0",
+    "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "7.6.0",
+    "@semantic-release/changelog": "3.0.4",
+    "@semantic-release/git": "7.0.16",
+    "@semantic-release/npm": "5.1.13",
+    "@storybook/addon-actions": "^5.1.11",
+    "@storybook/addon-centered": "^5.1.11",
+    "@storybook/addon-links": "^5.1.11",
+    "@storybook/addons": "^5.1.11",
+    "@storybook/react": "^5.1.11",
+    "@types/jest": "24.0.18",
+    "@types/react": "16.9.2",
+    "babel-core": "6.26.3",
+    "babel-loader": "8.0.6",
+    "babel-plugin-dynamic-import-node": "2.3.0",
+    "fork-ts-checker-webpack-plugin": "1.5.0",
+    "husky": "3.0.5",
+    "jest": "24.9.0",
+    "lint-staged": "9.2.5",
+    "prettier": "1.18.2",
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
+    "rimraf": "3.0.0",
+    "rxjs": "6.5.3",
+    "sass": "^1.22.10",
+    "sass-loader": "^8.0.0",
+    "semantic-release": "15.13.24",
+    "storybook": "^5.1.11",
+    "ts-loader": "6.1.0",
+    "ts-node": "8.3.0",
+    "tslint": "5.20.0",
+    "tslint-config-prettier": "1.18.0",
+    "tslint-eslint-rules": "5.4.0",
+    "tslint-plugin-prettier": "2.0.1",
+    "tslint-react": "4.0.0",
+    "typescript": "3.6.3"
+  },
+  "release": {
+    "branches": [
+      "master",
+      {
+        "name": "next",
+        "prerelease": "rc"
+      }
+    ],
+    "verifyConditions": [
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ],
+    "prepare": [
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ]
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "tslint --fix -t verbose",
+      "git add"
+    ]
+  }
+}
