@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { storiesOf } from '@storybook/react';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useRxAsync } from '../useRxAsync';
@@ -37,62 +36,66 @@ function Result({ loading, error, data }: Props) {
 
 export default {
   title: 'useRxAsync',
-  component: useRxAsync
+  parameters: {
+    component: useRxAsync,
+  },
 };
 
-storiesOf('useRxAsync', module)
-  .add('Basic', () => {
-    const state = useRxAsync(request);
-    return <Result {...state} />;
-  })
-  .add('Cancellation', () => {
-    const state = useRxAsync(request2, { defer: true });
-    return (
-      <>
-        <button onClick={state.run}>Get Result</button>
-        <button onClick={state.cancel}>Cancel</button>
-        <Result {...state} />
-      </>
-    );
-  })
-  .add('Defer', () => {
-    const state = useRxAsync(request2, { defer: true });
-    return (
-      <>
-        <button onClick={state.run}>Get Result</button>
-        <Result {...state} />
-      </>
-    );
-  })
-  .add('Dynamic Parameters', () => {
-    const [result, setResult] = useState(0);
-    const callback = useCallback(() => request3(result), [result]);
-    const state = useRxAsync(callback, { defer: true });
+export const Basic = () => {
+  const state = useRxAsync(request);
+  return <Result {...state} />;
+};
 
-    return (
-      <>
-        <h5>Click on the button to get a result</h5>
-        <button onClick={() => setResult(100)}>100</button>
-        <button onClick={() => setResult(200)}>200</button>
-        <button onClick={() => setResult(300)}>300</button>
-        <Result {...state} />
-      </>
-    );
-  })
-  .add('Transform / Pipe', () => {
-    const double = (ob: Observable<number>) => ob.pipe(map(v => v * 2));
+export const Cancellation = () => {
+  const state = useRxAsync(request2, { defer: true });
+  return (
+    <>
+      <button onClick={state.run}>Get Result</button>
+      <button onClick={state.cancel}>Cancel</button>
+      <Result {...state} />
+    </>
+  );
+};
 
-    const [result, setResult] = useState(0);
-    const callback = useCallback(() => request3(result), [result]);
-    const state = useRxAsync(callback, { defer: true, pipe: double });
+export const Defer = () => {
+  const state = useRxAsync(request2, { defer: true });
+  return (
+    <>
+      <button onClick={state.run}>Get Result</button>
+      <Result {...state} />
+    </>
+  );
+};
 
-    return (
-      <>
-        <h5>Click on the button to get a result, the result will be double</h5>
-        <button onClick={() => setResult(100)}>100</button>
-        <button onClick={() => setResult(200)}>200</button>
-        <button onClick={() => setResult(300)}>300</button>
-        <Result {...state} />
-      </>
-    );
-  });
+export const DynamicParameters = () => {
+  const [result, setResult] = useState(0);
+  const callback = useCallback(() => request3(result), [result]);
+  const state = useRxAsync(callback, { defer: true });
+  return (
+    <>
+      <h5>Click on the button to get a result</h5>
+      <button onClick={() => setResult(100)}>100</button>
+      <button onClick={() => setResult(200)}>200</button>
+      <button onClick={() => setResult(300)}>300</button>
+      <Result {...state} />
+    </>
+  );
+};
+
+export const Pipe = () => {
+  const double = (ob: Observable<number>) => ob.pipe(map(v => v * 2));
+
+  const [result, setResult] = useState(0);
+  const callback = useCallback(() => request3(result), [result]);
+  const state = useRxAsync(callback, { defer: true, pipe: double });
+
+  return (
+    <>
+      <h5>Click on the button to get a result, the result will be double</h5>
+      <button onClick={() => setResult(100)}>100</button>
+      <button onClick={() => setResult(200)}>200</button>
+      <button onClick={() => setResult(300)}>300</button>
+      <Result {...state} />
+    </>
+  );
+};
