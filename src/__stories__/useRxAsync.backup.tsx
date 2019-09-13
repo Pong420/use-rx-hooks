@@ -10,7 +10,7 @@ const request = () => delay(2000).then(() => 'done!');
 const request2 = () => delay(2000).then(() => Math.random());
 const request3 = (result: number) => delay(2000).then(() => result);
 
-function Result({ loading, error, data }: Props) {
+export function Result({ loading, error, data }: Props) {
   const content = (() => {
     if (loading) {
       return 'Loading...';
@@ -38,6 +38,10 @@ export default {
   title: 'useRxAsync',
   parameters: {
     component: useRxAsync,
+    docs: {
+      container: null,
+      page: null,
+    },
   },
 };
 
