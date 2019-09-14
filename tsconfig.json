@@ -18,5 +18,13 @@
     "outDir": "lib",
     "lib": ["es2018", "dom"]
   },
-  "exclude": ["node_modules", "lib", "**/__tests__/**/*", "**/__stories__/**/*", "*.test.ts", "*.test.tsx"]
+  "exclude": [
+    "node_modules",
+    "lib",
+    "esm",
+    "**/__tests__/**/*",
+    "**/__stories__/**/*",
+    "*.test.ts",
+    "*.test.tsx"
+  ]
 }
