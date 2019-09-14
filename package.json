@@ -25,9 +25,7 @@
     "storybook": "start-storybook -p 6006",
     "storybook:build": "build-storybook",
     "storybook:upload": "gh-pages -d storybook-static --git \"$(which git)\"",
-    "storybook:clean": "rimraf storybook-static",
-    "release": "semantic-release",
-    "build-storybook": "build-storybook"
+    "storybook:clean": "rimraf storybook-static"
   },
   "husky": {
     "hooks": {
@@ -42,9 +40,6 @@
     "rxjs": "6.5.3"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "3.0.4",
-    "@semantic-release/git": "7.0.16",
-    "@semantic-release/npm": "5.1.15",
     "@storybook/addon-centered": "^5.2.0-rc.11",
     "@storybook/addon-docs": "^5.2.0-rc.11",
     "@storybook/addon-links": "^5.2.0-rc.11",
@@ -65,7 +60,6 @@
     "rxjs": "6.5.3",
     "sass": "^1.22.12",
     "sass-loader": "^8.0.0",
-    "semantic-release": "15.13.24",
     "ts-loader": "6.1.0",
     "ts-node": "8.3.0",
     "tslint": "5.20.0",
@@ -74,25 +68,6 @@
     "tslint-plugin-prettier": "2.0.1",
     "tslint-react": "4.0.0",
     "typescript": "3.6.3"
-  },
-  "release": {
-    "branches": [
-      "master",
-      {
-        "name": "next",
-        "prerelease": "rc"
-      }
-    ],
-    "verifyConditions": [
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      "@semantic-release/git"
-    ],
-    "prepare": [
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      "@semantic-release/git"
-    ]
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
