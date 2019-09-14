@@ -14,7 +14,7 @@ import deferCode from '!!raw-loader!./Defer.tsx';
 import dynamicParametersCode from '!!raw-loader!./DynamicParameters.tsx';
 import pipeCode from '!!raw-loader!./Pipe.tsx';
 
-<Meta title="useRxAsync" component={useRxAsync} parameters={{ docs: { page: null } }} />
+<Meta title="useRxAsync" />
 
 # useRxAsync
 
@@ -47,12 +47,6 @@ declare function useRxAsync<T, O = T>(
 ): State<O>;
 ```
 
-## Demo
-
-> Shared code used in below demo
-
-<Source {...{ code: sharedCode, language: 'jsx' }} />
-
 ### Basic
 
 <Preview name="Basic" code={basicCode}>
@@ -77,9 +71,7 @@ declare function useRxAsync<T, O = T>(
   <DynamicParameters />
 </Preview>
 
-### Pipe
-
-> The result will be double
+### Double Result (Pipe)
 
 <Preview name="Cancellation" code={pipeCode}>
   <Pipe />

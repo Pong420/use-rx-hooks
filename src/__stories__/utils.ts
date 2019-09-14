@@ -14,7 +14,6 @@ export const Preview = ({
   withSource,
   ...props
 }: PreviewProps) => {
-  console.log(code.split('\n'));
   return React.createElement(
     PurePreview,
     {

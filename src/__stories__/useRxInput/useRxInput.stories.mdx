@@ -1,0 +1,65 @@
+import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
+import { useRxInput } from '../../useRxInput';
+import { Preview } from '../utils';
+import { Basic } from './Basic.tsx';
+import { DefaultValue } from './DefaultValue.tsx';
+import { Debounce } from './Debounce.tsx';
+import { Double } from './Double.tsx';
+
+import basicCode from '!!raw-loader!./Basic.tsx';
+import defaultValueCode from '!!raw-loader!./DefaultValue.tsx';
+import debounceCode from '!!raw-loader!./Debounce.tsx';
+import doubleCode from '!!raw-loader!./Double.tsx';
+
+<Meta title="useRxInput" />
+
+# useRxInput
+
+```js
+const [value, inputProps] = useRxInput(options?);
+```
+
+## Typings
+
+```js
+
+type TargetEl = HTMLInputElement | HTMLTextAreaElement;
+
+interface InputProps<T extends TargetEl = HTMLInputElement> {
+  ref: RefObject<T>;
+  defaultValue?: string;
+}
+
+type RxInputPipe<O> = (ob: Observable<string | undefined>) => Observable<O>;
+
+interface UseRxInputOptions<O> {
+  defaultValue?: string;
+  pipe?: RxInputPipe<O>;
+}
+
+declare function useRxInput<O, T extends TargetEl = HTMLInputElement>(options?:UseRxInputOptions<O>): [O, InputProps];
+```
+
+### Basic
+
+<Preview name="Basic" code={basicCode}>
+  <Basic />
+</Preview>
+
+## With default value
+
+<Preview name="Default Value" code={defaultValueCode}>
+  <DefaultValue />
+</Preview>
+
+## Debounce 1 second (Pipe)
+
+<Preview name="Debounce" code={debounceCode}>
+  <Debounce />
+</Preview>
+
+## Double your input
+
+<Preview name="Double" code={doubleCode}>
+  <Double />
+</Preview>
