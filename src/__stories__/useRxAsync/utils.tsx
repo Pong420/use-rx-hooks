@@ -3,6 +3,8 @@ import { useRxAsync } from '../../useRxAsync';
 
 type Props = ReturnType<typeof useRxAsync>;
 
+const delay = (ms: number) => new Promise(_ => setTimeout(_, ms));
+
 export const request = () => delay(2000).then(() => 'done!');
 export const request2 = () => delay(2000).then(() => Math.random());
 export const request3 = (result: number) => delay(2000).then(() => result);
