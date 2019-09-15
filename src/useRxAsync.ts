@@ -40,7 +40,10 @@ function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
   }
 }
 
-export function useRxAsync<T, O = T>(fn: AsyncFn<T>, options: UseRxAsyncOptions<T, O> = {}) {
+export function useRxAsync<T, O = T>(
+  fn: AsyncFn<T>,
+  options: UseRxAsyncOptions<T, O> = {}
+) {
   const { defer, pipe, initialValue, onSuccess, onFailure } = options;
   const [state, dispatch] = useReducer<Reducer<State<O>, Actions<O>>>(reducer, {
     ...initialArg,

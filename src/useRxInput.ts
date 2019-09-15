@@ -13,7 +13,9 @@ interface InputProps<T extends TargetEl = HTMLInputElement> {
   defaultValue?: string;
 }
 
-export type RxInputPipe<O> = (ob: Observable<string | undefined>) => Observable<O>;
+export type RxInputPipe<O> = (
+  ob: Observable<string | undefined>
+) => Observable<O>;
 
 export interface UseRxInputOptions<O, T extends TargetEl = HTMLInputElement> {
   interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;

@@ -1,5 +1,8 @@
 import React, { ReactNode } from 'react';
-import { Preview as PurePreview, PreviewProps as PurePreviewProps } from '@storybook/components';
+import {
+  Preview as PurePreview,
+  PreviewProps as PurePreviewProps,
+} from '@storybook/components';
 
 interface PreviewProps extends PurePreviewProps {
   language?: string;
