@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useReducer, useRef, Reducer } from 'react';
-import { from, Subscription, Observable, ObservableInput } from 'rxjs';
+import { from, Subscription, Observable, ObservableInput } from 'rxjs/_esm5/internal/observable';
 
 type AsyncFn<T> = () => ObservableInput<T>;
 
@@ -44,7 +44,7 @@ export function useRxAsync<T, O = T>(fn: AsyncFn<T>, options: RxAsyncOptions<T, 
   const { defer, pipe, initialValue, onSuccess, onFailure } = options;
   const [state, dispatch] = useReducer<Reducer<State<O>, Actions<O>>>(reducer, {
     ...initialArg,
-    data: initialValue
+    data: initialValue,
   });
   const deferRef = useRef(!!defer);
   const subscription = useRef(new Subscription());

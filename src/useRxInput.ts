@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, RefObject } from 'react';
-import { fromEvent, Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { fromEvent, Observable } from 'rxjs/_esm5/internal/observable';
+import { map, startWith } from 'rxjs/_esm5/internal/operators';
 
 type TargetEl = HTMLInputElement | HTMLTextAreaElement;
 
