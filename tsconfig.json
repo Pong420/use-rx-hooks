@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
     "module": "commonjs",
     "moduleResolution": "node",
     "jsx": "react",
     "declaration": true,
     "pretty": true,
-    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
@@ -18,6 +17,7 @@
     "incremental": true,
     "sourceMap": true
   },
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "lib",

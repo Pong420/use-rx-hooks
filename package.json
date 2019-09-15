@@ -6,8 +6,7 @@
   "module": "esm/index.js",
   "sideEffects": false,
   "files": [
-    "lib/",
-    "esm/"
+    "lib/"
   ],
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
@@ -18,9 +17,9 @@
     "lint": "tslint 'src/**/*.{ts,tsx}' -t verbose",
     "lint:fix": "yarn lint --fix",
     "lint:types": "tsc --noEmit",
-    "build:cjs": "tsc",
-    "build:es": "tsc -m esNext --outDir esm",
-    "build": "yarn build:cjs && yarn build:es",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions '.ts,.tsx' --ignore 'src/__stories__'",
+    "build": "yarn build:types && yarn build:js",
     "clean": "rimraf lib storybook-static esm",
     "storybook": "start-storybook -p 6006",
     "storybook:build": "build-storybook",
@@ -41,6 +40,10 @@
     "rxjs": "6.5.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/preset-typescript": "^7.6.0",
     "@storybook/addon-centered": "^5.2.0-rc.11",
     "@storybook/addon-docs": "^5.2.0-rc.11",
     "@storybook/addon-links": "^5.2.0-rc.11",
@@ -49,6 +52,7 @@
     "@types/jest": "24.0.18",
     "@types/react": "16.9.2",
     "babel-loader": "^8.0.6",
+    "babel-plugin-import": "^1.12.1",
     "fork-ts-checker-webpack-plugin": "1.5.0",
     "gh-pages": "^2.1.1",
     "husky": "3.0.5",
@@ -68,7 +72,7 @@
     "tslint-eslint-rules": "5.4.0",
     "tslint-plugin-prettier": "2.0.1",
     "tslint-react": "4.0.0",
-    "typescript": "3.6.3"
+    "typescript": "^3.6.3"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
