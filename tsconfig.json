@@ -21,7 +21,6 @@
   "exclude": [
     "node_modules",
     "lib",
-    "esm",
     "**/__tests__/**/*",
     "**/__stories__/**/*",
     "*.test.ts",

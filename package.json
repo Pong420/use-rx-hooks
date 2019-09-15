@@ -3,7 +3,6 @@
   "version": "1.0.2",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
-  "module": "esm/index.js",
   "sideEffects": false,
   "files": [
     "lib/"
