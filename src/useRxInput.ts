@@ -48,7 +48,7 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
       const subscription = source$.subscribe(setValue);
       return () => subscription.unsubscribe();
     }
-  }, [pipe]);
+  }, [pipe, defaultValue, interceptors]);
 
   const inputProps: InputProps<T> = {
     ref,

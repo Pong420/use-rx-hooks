@@ -15,7 +15,7 @@ export function Result({ loading, error, data }: Props) {
       return 'Loading...';
     }
 
-    if (!!error) {
+    if (error) {
       return 'Error !';
     }
 

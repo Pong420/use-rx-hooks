@@ -12,7 +12,7 @@ export function isComposing(element: HTMLInputElement | HTMLTextAreaElement) {
     startWith(false)
   );
 
-  return (source$: Observable<any>) => {
+  return (source$: Observable<Event>) => {
     return source$.pipe(
       combineLatest(isComposing$),
       filter(([, isComposing]) => !isComposing),
