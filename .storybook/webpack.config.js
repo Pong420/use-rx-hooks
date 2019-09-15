@@ -18,7 +18,7 @@ module.exports = async ({ config }) => {
       },
     },
   });
-  
+
   config.module.rules.push({
     test: /\.(stories|story)\.mdx$/,
     use: [
