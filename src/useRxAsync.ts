@@ -5,10 +5,10 @@ import { from } from 'rxjs/_esm5/internal/observable/from';
 
 type AsyncFn<T> = () => ObservableInput<T>;
 
-export interface RxAsyncOptions<I, O = I> {
+export interface UseRxAsyncOptions<I, O = I> {
   initialValue?: O;
   defer?: boolean;
-  pipe?(ob: Observable<I>): Observable<O>;
+  pipe?: (ob: Observable<I>) => Observable<O>;
   onSuccess?(value: O): void;
   onFailure?(error: any): void;
 }
@@ -42,7 +42,7 @@ function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
   }
 }
 
-export function useRxAsync<T, O = T>(fn: AsyncFn<T>, options: RxAsyncOptions<T, O> = {}) {
+export function useRxAsync<T, O = T>(fn: AsyncFn<T>, options: UseRxAsyncOptions<T, O> = {}) {
   const { defer, pipe, initialValue, onSuccess, onFailure } = options;
   const [state, dispatch] = useReducer<Reducer<State<O>, Actions<O>>>(reducer, {
     ...initialArg,

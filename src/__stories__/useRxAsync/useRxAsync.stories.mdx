@@ -33,7 +33,7 @@ interface State<T> {
   cancel: () => void;
 }
 
-interface RxAsyncOptions<I, O = I> {
+interface UseRxAsyncOptions<I, O = I> {
   initialValue?: O;
   defer?: boolean;
   pipe?(ob: Observable<I>): Observable<O>;

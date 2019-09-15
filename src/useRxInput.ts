@@ -1,13 +1,11 @@
 import { useRef, useEffect, useState, RefObject } from 'react';
-import { fromEvent } from 'rxjs/_esm5/internal/observable/fromEvent';
-import { Observable } from 'rxjs/_esm5/internal/Observable';
-import { map, startWith } from 'rxjs/_esm5/internal/operators';
+import { Observable, fromEvent } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 type TargetEl = HTMLInputElement | HTMLTextAreaElement;
 
 interface ChangeEvent<T = Element> extends Event {
   target: EventTarget & T & { value: string };
-  isComposing: boolean;
 }
 
 interface InputProps<T extends TargetEl = HTMLInputElement> {
@@ -17,15 +15,17 @@ interface InputProps<T extends TargetEl = HTMLInputElement> {
 
 export type RxInputPipe<O> = (ob: Observable<string | undefined>) => Observable<O>;
 
-export interface UseRxInputOptions<O> {
+export interface UseRxInputOptions<O, T extends TargetEl = HTMLInputElement> {
+  interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;
   defaultValue?: string;
   pipe?: RxInputPipe<O>;
 }
 
 export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
   defaultValue,
+  interceptors,
   pipe,
-}: UseRxInputOptions<O> = {}) {
+}: UseRxInputOptions<O, T> = {}) {
   const ref = useRef<T>(null);
   const [value, setValue] = useState<O | undefined>();
 
@@ -33,6 +33,7 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
     const el = ref.current;
     if (el) {
       let source$: Observable<any> = fromEvent(el, 'input').pipe(
+        interceptors ? interceptors(el) : map(evt => evt),
         map(evt => evt as ChangeEvent),
         map(evt => evt.target.value),
         startWith(defaultValue)

@@ -2,11 +2,13 @@ import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
 import { useRxInput } from '../../useRxInput';
 import { Preview } from '../utils';
 import { Basic } from './Basic.tsx';
+import { Composing } from './Composing.tsx';
 import { DefaultValue } from './DefaultValue.tsx';
 import { Debounce } from './Debounce.tsx';
 import { Double } from './Double.tsx';
 
 import basicCode from '!!raw-loader!./Basic.tsx';
+import composingCode from '!!raw-loader!./Composing.tsx';
 import defaultValueCode from '!!raw-loader!./DefaultValue.tsx';
 import debounceCode from '!!raw-loader!./Debounce.tsx';
 import doubleCode from '!!raw-loader!./Double.tsx';
@@ -32,7 +34,8 @@ interface InputProps<T extends TargetEl = HTMLInputElement> {
 
 type RxInputPipe<O> = (ob: Observable<string | undefined>) => Observable<O>;
 
-interface UseRxInputOptions<O> {
+interface UseRxInputOptions<O, T extends TargetEl = HTMLInputElement> {
+  interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;
   defaultValue?: string;
   pipe?: RxInputPipe<O>;
 }
@@ -44,6 +47,12 @@ declare function useRxInput<O, T extends TargetEl = HTMLInputElement>(options?:U
 
 <Preview name="Basic" code={basicCode}>
   <Basic />
+</Preview>
+
+## Composing
+
+<Preview name="Composing" code={composingCode}>
+  <Composing />
 </Preview>
 
 ## With default value
@@ -63,3 +72,5 @@ declare function useRxInput<O, T extends TargetEl = HTMLInputElement>(options?:U
 <Preview name="Double" code={doubleCode}>
   <Double />
 </Preview>
+
+## Composing
