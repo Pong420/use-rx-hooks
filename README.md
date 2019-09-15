@@ -7,14 +7,10 @@ yarn add use-rx-hooks
 ```
 
 ```js
-import { useRxAsync } from 'use-rx-hooks';
-
-// or
-
-import { useRxAsync } from 'use-rx-hooks/lib/useRxAsync';
+import { useRxAsync, useRxInput } from 'use-rx-hooks';
 ```
 
-[Demo](https://pong420.github.io/use-rx-hooks/?path=/story/userxasync--page)
+[Docs](https://pong420.github.io/use-rx-hooks/?path=/story/userxasync--page)
 
 ## License
 
