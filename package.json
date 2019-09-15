@@ -1,6 +1,6 @@
 {
   "name": "use-rx-hooks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -29,7 +29,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint:types && lint-staged"
+      "pre-commit": "yarn lint:types && lint-staged",
+      "pre-publish": "yarn build"
     }
   },
   "author": "@Pong420",
