@@ -1,6 +1,7 @@
 import { Observable, empty } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, RefObject } from 'react';
+import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
 interface GetBase64ImageArgs {
   file: File | null;
@@ -11,11 +12,20 @@ interface State extends GetBase64ImageArgs {
   url: string;
 }
 
+export type ReturnType$UseRxFileToImage<T> = [
+  State | undefined,
+  {
+    ref: RefObject<T>;
+  }
+];
+
 export type UseRxFileToImageInput<T> = (
   target: T
 ) => Observable<[DataTransferItemList | null, Event]>;
 
-export function useRxFileToImage<T extends any>(fn: UseRxFileToImageInput<T>) {
+export function useRxFileToImage<T extends HTMLElement, E extends Event>(
+  fn: UseRxFileToImageInput<FromEventTarget<E>>
+): ReturnType$UseRxFileToImage<T> {
   const [state, setState] = useState<State>();
   const ref = useRef<T>(null);
 
@@ -52,11 +62,7 @@ export function useRxFileToImage<T extends any>(fn: UseRxFileToImageInput<T>) {
     }
   }, [fn]);
 
-  const returnProps = {
-    ref,
-  };
-
-  return [state, { ref }] as [State, typeof returnProps];
+  return [state, { ref }];
 }
 
 const getBase64ImageURL = ({ file, type }: GetBase64ImageArgs) => {
