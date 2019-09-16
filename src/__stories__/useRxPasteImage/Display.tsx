@@ -1,0 +1,55 @@
+import React, { CSSProperties, useEffect, useState } from 'react';
+
+interface Props {
+  image: any;
+}
+
+const style: CSSProperties = {
+  display: 'flex',
+  marginTop: 10,
+  backgroundColor: 'rgb(242, 242, 242)',
+  padding: 10,
+};
+
+const imageContainerStyle: CSSProperties = {
+  alignSelf: 'center',
+  maxWidth: 200,
+  marginRight: 10,
+};
+
+export function Display({ image }: Props) {
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    image && setImages(curr => [...curr, image]);
+  }, [image]);
+
+  return (
+    <div>
+      {images.map(({ url, ...rest }, index) => (
+        <div key={index} style={style}>
+          <div className="image" style={imageContainerStyle}>
+            <img src={url} alt="" width="100%" />
+          </div>
+          <pre className="json">{JSON.stringify(clone(rest), null, 2)}</pre>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function clone({ file, ...rest }: any) {
+  if (file) {
+    return {
+      file: {
+        lastModified: file.lastModified,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      },
+      ...rest,
+    };
+  }
+
+  return {};
+}

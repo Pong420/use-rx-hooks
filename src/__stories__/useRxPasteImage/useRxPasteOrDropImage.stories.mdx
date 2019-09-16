@@ -1,0 +1,52 @@
+import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
+import { Preview } from '../utils';
+import { PasteImage } from './PasteImage.tsx';
+import { DropImage } from './DropImage.tsx';
+import { Window } from './Window.tsx';
+
+import pasteImageCode from '!!raw-loader!./PasteImage.tsx';
+import dropImageCode from '!!raw-loader!./DropImage.tsx';
+
+<Meta title="useRxDropImage & useRxPasteImage" />
+
+# useRxDropImage & useRxPasteImage
+
+```js
+const [state?, props] = useRxDropImage();
+const [state?, props] = useRxPasteImage();
+```
+
+## Typings
+
+```js
+interface State {
+  file: File;
+  url: string;
+  type: string;
+}
+
+interface Props<T> {
+  ref: RefObject<T>;
+}
+
+declare function useRxDropImage<T>();
+declare function useRxPasteImage<T>();
+```
+
+### Paste Image
+
+<Preview name="Paste Image" code={pasteImageCode}>
+  <PasteImage />
+</Preview>
+
+### Drop Image
+
+<Preview name="Drop Image" code={dropImageCode}>
+  <DropImage />
+</Preview>
+
+### Mix Paste & Drop Image
+
+<Preview name="Mix Paste & Drop Image" code={dropImageCode}>
+  <Window />
+</Preview>

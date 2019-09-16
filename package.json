@@ -11,11 +11,13 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "start": "yarn storybook",
+    "dev": "yarn check-types & yarn storybook",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "yarn lint --fix",
     "lint:types": "tsc --noEmit",
+    "check-types": "tsc --watch --emitDeclarationOnly",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions '.ts,.tsx' --ignore 'src/__stories__'",
     "build": "yarn build:types && yarn build:js",

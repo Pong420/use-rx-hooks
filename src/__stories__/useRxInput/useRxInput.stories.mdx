@@ -40,7 +40,9 @@ interface UseRxInputOptions<O, T extends TargetEl = HTMLInputElement> {
   pipe?: RxInputPipe<O>;
 }
 
-declare function useRxInput<O, T extends TargetEl = HTMLInputElement>(options?:UseRxInputOptions<O>): [O, InputProps];
+declare function useRxInput<O, T extends TargetEl = HTMLInputElement>(
+  options?:UseRxInputOptions<O>
+): [O, InputProps];
 ```
 
 ### Basic

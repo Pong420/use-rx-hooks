@@ -15,6 +15,12 @@ a {
 }
 
 #docs-root {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   button + button {
     margin-left: 10px;
   }

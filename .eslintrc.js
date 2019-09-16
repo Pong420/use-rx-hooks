@@ -7,5 +7,6 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-angle-bracket-type-assertion': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
   },
 };
