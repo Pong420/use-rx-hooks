@@ -12,20 +12,20 @@ interface State extends GetBase64ImageArgs {
   url: string;
 }
 
-export type ReturnType$UseRxFileToImage<T> = [
+export type Return$UseRxFileToImage<T> = [
   State | undefined,
   {
     ref: RefObject<T>;
   }
 ];
 
-export type UseRxFileToImageInput<T> = (
-  target: T
+export type UseRxFileToImageInput<E> = (
+  target: FromEventTarget<E>
 ) => Observable<[DataTransferItemList | null, Event]>;
 
 export function useRxFileToImage<T extends HTMLElement, E extends Event>(
-  fn: UseRxFileToImageInput<FromEventTarget<E>>
-): ReturnType$UseRxFileToImage<T> {
+  fn: UseRxFileToImageInput<E>
+): Return$UseRxFileToImage<T> {
   const [state, setState] = useState<State>();
   const ref = useRef<T>(null);
 

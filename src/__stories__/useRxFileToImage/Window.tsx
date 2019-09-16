@@ -5,7 +5,7 @@ import { fromPaste } from '../../useRxPasteImage';
 import { useRxFileToImage } from '../../useRxFileToImage';
 import { Display } from './Display';
 
-const merged = el => merge(fromDrop(el), fromPaste(el));
+const merged = () => merge(fromDrop(window), fromPaste(window));
 
 export const Window = () => {
   const [image] = useRxFileToImage(merged);

@@ -1,9 +1,6 @@
 import { fromEvent, merge } from 'rxjs';
 import { map, filter, tap } from 'rxjs/operators';
-import {
-  useRxFileToImage,
-  ReturnType$UseRxFileToImage,
-} from './useRxFileToImage';
+import { useRxFileToImage, Return$UseRxFileToImage } from './useRxFileToImage';
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
 export function fromDrop<T extends Event>(el: FromEventTarget<T>) {
@@ -23,6 +20,6 @@ export function fromDrop<T extends Event>(el: FromEventTarget<T>) {
 export function useRxDropImage<
   T extends HTMLElement,
   E extends Event = Event
->(): ReturnType$UseRxFileToImage<T> {
+>(): Return$UseRxFileToImage<T> {
   return useRxFileToImage<T, E>(fromDrop);
 }
