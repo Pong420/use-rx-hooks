@@ -1,6 +1,6 @@
 {
   "name": "use-rx-hooks",
-  "version": "1.0.3-alpha-1",
+  "version": "1.0.3",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -78,6 +78,7 @@
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
       "eslint --fix",
+      "prettier --ignore-path .eslintignore --write",
       "git add"
     ]
   }
