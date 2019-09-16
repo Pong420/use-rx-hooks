@@ -1,32 +1,31 @@
 {
   "name": "use-rx-hooks",
-  "version": "1.0.2",
+  "version": "1.0.3-alpha-1",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
+  "module": "esm/index.js",
   "sideEffects": false,
   "files": [
-    "lib/"
+    "lib/",
+    "esm/"
   ],
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
   "scripts": {
     "start": "yarn storybook",
-    "dev": "yarn check-types & yarn storybook",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "yarn lint --fix",
     "lint:types": "tsc --noEmit",
-    "check-types": "tsc --watch --emitDeclarationOnly",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel src --out-dir lib --extensions '.ts,.tsx' --ignore 'src/__stories__'",
-    "build": "yarn build:types && yarn build:js",
+    "build:cjs": "tsc",
+    "build:es": "tsc -m esNext --outDir esm",
+    "build": "yarn build:cjs && yarn build:es",
     "clean": "rimraf lib storybook-static esm",
     "storybook": "start-storybook -p 6006",
     "storybook:build": "build-storybook",
     "storybook:upload": "gh-pages -d storybook-static --git \"$(which git)\"",
-    "storybook:clean": "rimraf storybook-static",
-    "prettier": "prettier"
+    "storybook:clean": "rimraf storybook-static"
   },
   "husky": {
     "hooks": {
@@ -42,10 +41,7 @@
     "rxjs": "6.5.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.0",
     "@babel/core": "^7.6.0",
-    "@babel/preset-env": "^7.6.0",
-    "@babel/preset-typescript": "^7.6.0",
     "@storybook/addon-centered": "^5.2.0-rc.11",
     "@storybook/addon-docs": "^5.2.0-rc.11",
     "@storybook/addon-links": "^5.2.0-rc.11",
@@ -55,9 +51,7 @@
     "@types/react": "16.9.2",
     "@typescript-eslint/eslint-plugin": "2.2.0",
     "@typescript-eslint/parser": "2.2.0",
-    "babel-eslint": "10.0.3",
     "babel-loader": "^8.0.6",
-    "babel-plugin-import": "^1.12.1",
     "eslint": "6.4.0",
     "eslint-config-react-app": "^5.0.1",
     "eslint-plugin-flowtype": "4.3.0",
