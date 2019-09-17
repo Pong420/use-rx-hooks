@@ -41,7 +41,7 @@ function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
 }
 
 export function useRxAsync<T, O = T>(
-  fn: AsyncFn<T>,
+  fn: AsyncFn<O>,
   options: UseRxAsyncOptions<T, O> = {}
 ) {
   const { defer, pipe, initialValue, onSuccess, onFailure } = options;

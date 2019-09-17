@@ -41,8 +41,10 @@ interface UseRxAsyncOptions<I, O = I> {
   onFailure?(error: any): void;
 }
 
+type AsyncFn<T> = () => ObservableInput<T>;
+
 declare function useRxAsync<T, O = T>(
-  input: ObservableInput<T>,
+  fn: AsyncFn<O>,
   options?: RxAsyncOptions<T, O>
 ): State<O>;
 ```
