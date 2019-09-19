@@ -4,3 +4,4 @@ export * from './useRxFileToImage';
 export * from './useRxDropImage';
 export * from './useRxPasteImage';
 export * from './utils/isComposing';
+export * from './utils/mergeRefs';
