@@ -25,7 +25,7 @@ const state = useRxAsync(input, options?);
 ## Typings
 
 ```js
-interface State<T> {
+export interface RxAsyncState<T> {
   loading: boolean;
   error?: any;
   data?: T;
@@ -33,7 +33,7 @@ interface State<T> {
   cancel: () => void;
 }
 
-interface UseRxAsyncOptions<I, O = I> {
+export interface RxAsyncOptions<I, O = I> {
   initialValue?: O;
   defer?: boolean;
   pipe?(ob: Observable<I>): Observable<O>;

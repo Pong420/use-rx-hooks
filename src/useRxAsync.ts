@@ -3,12 +3,17 @@ import { from, Subscription, Observable, ObservableInput } from 'rxjs';
 
 type AsyncFn<T> = () => ObservableInput<T>;
 
-export interface UseRxAsyncOptions<I, O = I> {
+export interface RxAsyncOptions<I, O = I> {
   initialValue?: O;
   defer?: boolean;
   pipe?: (ob: Observable<I>) => Observable<O>;
   onSuccess?(value: O): void;
   onFailure?(error: any): void;
+}
+
+export interface RxAsyncState<T> extends State<T> {
+  run: () => void;
+  cancel: () => void;
 }
 
 interface State<T> {
@@ -23,7 +28,7 @@ type Actions<T> =
   | { type: 'FETCH_FAILURE'; payload?: any }
   | { type: 'CANCEL' };
 
-const initialArg: State<any> = { loading: false };
+const initialArg: State<unknown> = { loading: false };
 
 function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
   switch (action.type) {
@@ -42,8 +47,18 @@ function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
 
 export function useRxAsync<T, O = T>(
   fn: AsyncFn<O>,
-  options: UseRxAsyncOptions<T, O> = {}
-) {
+  options?: RxAsyncOptions<T, O> & { initialValue: undefined }
+): RxAsyncState<O>;
+
+export function useRxAsync<T, O = T>(
+  fn: AsyncFn<O>,
+  options?: RxAsyncOptions<T, O> & { initialValue: O }
+): RxAsyncState<O> & { data: O };
+
+export function useRxAsync<T, O = T>(
+  fn: AsyncFn<O>,
+  options: RxAsyncOptions<T, O> = {}
+): RxAsyncState<O> {
   const { defer, pipe, initialValue, onSuccess, onFailure } = options;
   const [state, dispatch] = useReducer<Reducer<State<O>, Actions<O>>>(reducer, {
     ...initialArg,
