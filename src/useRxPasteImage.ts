@@ -1,6 +1,6 @@
 import { fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { useRxFileToImage, Return$UseRxFileToImage } from './useRxFileToImage';
+import { useRxFileToImage, RxFileToImageState } from './useRxFileToImage';
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
 export function fromPasteEvent<E>(el: FromEventTarget<E>) {
@@ -18,6 +18,6 @@ export function fromPasteEvent<E>(el: FromEventTarget<E>) {
 export function useRxPasteImage<
   T extends HTMLElement,
   E extends Event = Event
->(): Return$UseRxFileToImage<T> {
+>(): RxFileToImageState<T> {
   return useRxFileToImage<T, E>(fromPasteEvent);
 }

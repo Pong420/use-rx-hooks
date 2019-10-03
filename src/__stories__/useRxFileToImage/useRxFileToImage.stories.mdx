@@ -13,7 +13,7 @@ import windowCode from '!!raw-loader!./Window.tsx';
 # useRxFileToImage
 
 ```js
-const [state?, props] = useRxFileToImage<T extends HTMLElement, E extends Event>(fn: UseRxFileToImageInput<E>);
+const [state?, props] = useRxFileToImage<T extends HTMLElement, E extends Event>(fn: RxFileToImageInput<E>);
 
 // HOC for `useRxFileToImage`
 const [state?, props] = useRxDropImage<T extends HTMLElement, E extends Event = Event>();
@@ -25,7 +25,7 @@ const [state?, props] = useRxPasteImage<T extends HTMLElement, E extends Event =
 ```js
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
-export type UseRxFileToImageInput<E> = (
+export type RxFileToImageInput<E> = (
   target: FromEventTarget<E>
 ) => Observable<[DataTransferItemList | null, Event]>;
 

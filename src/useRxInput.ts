@@ -13,30 +13,41 @@ interface InputProps<T extends TargetEl = HTMLInputElement> {
   defaultValue?: string;
 }
 
-export type RxInputPipe<O> = (
-  ob: Observable<string | undefined>
-) => Observable<O>;
+export type RxInputPipe<O> = (ob: Observable<string>) => Observable<O>;
 
-export interface UseRxInputOptions<O, T extends TargetEl = HTMLInputElement> {
+export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
   interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;
   defaultValue?: string;
   pipe?: RxInputPipe<O>;
 }
 
+export type RxInputState<O, T extends TargetEl = HTMLInputElement> = [
+  O | undefined,
+  InputProps<T>
+];
+
+export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
+  options?: RxInputOptions<O, T> & { pipe?: undefined }
+): RxInputState<string, T>;
+
+export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
+  options?: RxInputOptions<O, T> & { pipe: RxInputPipe<O> }
+): RxInputState<O, T>;
+
 export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
-  defaultValue,
+  defaultValue = '',
   interceptors,
   pipe,
-}: UseRxInputOptions<O, T> = {}) {
+}: RxInputOptions<O, T> = {}): RxInputState<O, T> {
   const ref = useRef<T>(null);
-  const [value, setValue] = useState<O | undefined>();
+  const [value, setValue] = useState<O>();
 
   useEffect(() => {
     const el = ref.current;
     if (el) {
       let source$: Observable<any> = fromEvent(el, 'input').pipe(
         interceptors ? interceptors(el) : map(evt => evt),
-        map(evt => evt as ChangeEvent),
+        map(evt => evt as ChangeEvent<T>),
         map(evt => evt.target.value),
         startWith(defaultValue)
       );
@@ -50,18 +61,11 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
     }
   }, [pipe, defaultValue, interceptors]);
 
-  const inputProps: InputProps<T> = {
-    ref,
-    defaultValue,
-  };
-
-  const result: [typeof value, typeof inputProps] = [
+  return [
     value,
     {
       ref,
       defaultValue,
     },
   ];
-
-  return result;
 }
