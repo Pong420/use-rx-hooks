@@ -1,6 +1,6 @@
 {
   "name": "use-rx-hooks",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -25,12 +25,12 @@
     "storybook": "start-storybook -p 6006",
     "storybook:build": "build-storybook",
     "storybook:upload": "gh-pages -d storybook-static --git \"$(which git)\"",
-    "storybook:clean": "rimraf storybook-static"
+    "storybook:clean": "rimraf storybook-static",
+    "prepublishOnly": "yarn build && yarn storybook:build && yarn storybook:upload"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint:types && lint-staged",
-      "pre-publish": "yarn build"
+      "pre-commit": "yarn lint:types && lint-staged"
     }
   },
   "author": "@Pong420",
