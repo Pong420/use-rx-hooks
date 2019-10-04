@@ -47,7 +47,7 @@ function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
 
 export function useRxAsync<T, O = T>(
   fn: AsyncFn<O>,
-  options?: RxAsyncOptions<T, O> & { initialValue: undefined }
+  options?: RxAsyncOptions<T, O> & { initialValue?: undefined }
 ): RxAsyncState<O>;
 
 export function useRxAsync<T, O = T>(
@@ -64,7 +64,6 @@ export function useRxAsync<T, O = T>(
     ...initialArg,
     data: initialValue,
   });
-  const deferRef = useRef(!!defer);
   const subscription = useRef(new Subscription());
 
   const run = useCallback(() => {
@@ -97,11 +96,8 @@ export function useRxAsync<T, O = T>(
   }, [dispatch, subscription]);
 
   useEffect(() => {
-    if (deferRef.current === false) {
-      run();
-    }
-    deferRef.current = false;
-  }, [dispatch, run]);
+    !defer && run();
+  }, [dispatch, run, defer]);
 
   return { ...state, run, cancel };
 }
