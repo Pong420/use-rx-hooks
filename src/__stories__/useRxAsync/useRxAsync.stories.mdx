@@ -19,7 +19,7 @@ import pipeCode from '!!raw-loader!./Pipe.tsx';
 # useRxAsync
 
 ```js
-const state = useRxAsync(input, options?);
+const state = useRxAsync(fn, options?);
 ```
 
 ## Typings
@@ -45,10 +45,10 @@ export interface RxAsyncOptions<I, O = I> {
 
 type AsyncFn<T> = () => ObservableInput<T>;
 
-declare function useRxAsync<T, O = T>(
+export function useRxAsync<T, O = T>(
   fn: AsyncFn<O>,
   options?: RxAsyncOptions<T, O>
-): State<O>;
+): RxAsyncState<O>;
 ```
 
 ### Basic

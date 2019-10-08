@@ -1,17 +1,21 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRxAsync } from '../../useRxAsync';
 import { Result, request3 } from './utils';
 
 export const DynamicParameters = () => {
-  const [result, setResult] = useState(0);
-  const callback = useCallback(() => request3(result), [result]);
+  const [params, setParams] = useState(0);
+  const callback = useCallback(() => request3(params), [params]);
   const state = useRxAsync(callback, { defer: true });
+  const { run } = state;
+
+  useEffect(() => void (params && run()), [run, params]);
+
   return (
     <>
-      <h5>Click on the button to get a result</h5>
-      <button onClick={() => setResult(100)}>100</button>
-      <button onClick={() => setResult(200)}>200</button>
-      <button onClick={() => setResult(300)}>300</button>
+      <h5>Click on the button to get a params</h5>
+      <button onClick={() => setParams(100)}>100</button>
+      <button onClick={() => setParams(200)}>200</button>
+      <button onClick={() => setParams(300)}>300</button>
       <Result {...state} />
     </>
   );

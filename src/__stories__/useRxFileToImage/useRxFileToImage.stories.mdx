@@ -13,11 +13,11 @@ import windowCode from '!!raw-loader!./Window.tsx';
 # useRxFileToImage
 
 ```js
-const [state?, props] = useRxFileToImage<T extends HTMLElement, E extends Event>(fn: RxFileToImageInput<E>);
+const [state?, props] = useRxFileToImage(fn);
 
-// HOC for `useRxFileToImage`
-const [state?, props] = useRxDropImage<T extends HTMLElement, E extends Event = Event>();
-const [state?, props] = useRxPasteImage<T extends HTMLElement, E extends Event = Event>();
+// HOC of `useRxFileToImage`
+const [state?, props] = useRxDropImage();
+const [state?, props] = useRxPasteImage();
 ```
 
 ## Typings
@@ -29,6 +29,12 @@ export type RxFileToImageInput<E> = (
   target: FromEventTarget<E>
 ) => Observable<[DataTransferItemList | null, Event]>;
 
+export type RxFileToImageState<T> = [
+  State | undefined,
+  {
+    ref: RefObject<T>;
+  }
+];
 
 interface State {
   file: File;
@@ -40,8 +46,12 @@ interface Props<T> {
   ref: RefObject<T>;
 }
 
-declare function useRxDropImage<T>();
-declare function useRxPasteImage<T>();
+export function useRxFileToImage<T extends HTMLElement, E extends Event>(
+  fn: RxFileToImageInput<E>
+): RxFileToImageState<T>:
+
+export function useRxDropImage<T>(): RxFileToImageState<T>;
+export function useRxPasteImage<T>(): RxFileToImageState<T>;
 ```
 
 ### Paste Image
