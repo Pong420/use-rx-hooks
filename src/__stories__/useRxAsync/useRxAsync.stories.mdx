@@ -29,8 +29,10 @@ export interface RxAsyncState<T> {
   loading: boolean;
   error?: any;
   data?: T;
+  previous?: T;
   run: () => void;
   cancel: () => void;
+  reset: () => void;
 }
 
 export interface RxAsyncOptions<I, O = I> {

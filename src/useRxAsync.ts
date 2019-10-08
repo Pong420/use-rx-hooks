@@ -14,32 +14,46 @@ export interface RxAsyncOptions<I, O = I> {
 export interface RxAsyncState<T> extends State<T> {
   run: () => void;
   cancel: () => void;
+  reset: () => void;
 }
 
 interface State<T> {
   loading: boolean;
   error?: any;
   data?: T;
+  previous?: T;
 }
 
 type Actions<T> =
   | { type: 'FETCH_INIT' }
   | { type: 'FETCH_SUCCESS'; payload: T }
   | { type: 'FETCH_FAILURE'; payload?: any }
-  | { type: 'CANCEL' };
+  | { type: 'CANCEL' }
+  | { type: 'RESET'; payload?: T };
 
-const initialArg: State<unknown> = { loading: false };
+function init<T>(data?: T): State<T> {
+  return {
+    loading: false,
+    data,
+  };
+}
 
 function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
   switch (action.type) {
     case 'FETCH_INIT':
-      return { ...initialArg, loading: true, data: state.data };
+      return { ...init(state.previous), loading: true, previous: state.data };
     case 'FETCH_SUCCESS':
       return { ...state, loading: false, data: action.payload };
     case 'FETCH_FAILURE':
       return { ...state, loading: false, error: action.payload };
     case 'CANCEL':
-      return { ...state, loading: false };
+      return {
+        ...state,
+        ...(state.loading && { data: state.previous }),
+        loading: false,
+      };
+    case 'RESET':
+      return { ...init(action.payload) };
     default:
       throw new Error();
   }
@@ -60,10 +74,10 @@ export function useRxAsync<T, O = T>(
   options: RxAsyncOptions<T, O> = {}
 ): RxAsyncState<O> {
   const { defer, pipe, initialValue, onSuccess, onFailure } = options;
-  const [state, dispatch] = useReducer<Reducer<State<O>, Actions<O>>>(reducer, {
-    ...initialArg,
-    data: initialValue,
-  });
+  const [state, dispatch] = useReducer<
+    Reducer<State<O>, Actions<O>>,
+    O | undefined
+  >(reducer, initialValue, init);
   const subscription = useRef(new Subscription());
 
   const run = useCallback(() => {
@@ -95,9 +109,11 @@ export function useRxAsync<T, O = T>(
     dispatch({ type: 'CANCEL' });
   }, [dispatch, subscription]);
 
+  const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
+
   useEffect(() => {
     !defer && run();
   }, [dispatch, run, defer]);
 
-  return { ...state, run, cancel };
+  return { ...state, run, cancel, reset };
 }
