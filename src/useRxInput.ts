@@ -21,8 +21,8 @@ export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
   pipe?: RxInputPipe<O>;
 }
 
-export type RxInputState<O, T extends TargetEl = HTMLInputElement> = [
-  O | undefined,
+export type RxInputState<O = string, T extends TargetEl = HTMLInputElement> = [
+  O,
   InputProps<T>
 ];
 
@@ -38,7 +38,7 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
   defaultValue = '',
   interceptors,
   pipe,
-}: RxInputOptions<O, T> = {}): RxInputState<O, T> {
+}: RxInputOptions<O, T> = {}): RxInputState<string | O | undefined, T> {
   const ref = useRef<T>(null);
   const [value, setValue] = useState<O>();
 

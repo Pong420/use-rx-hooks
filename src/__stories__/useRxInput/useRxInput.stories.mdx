@@ -41,13 +41,13 @@ export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
 }
 
 export type RxInputState<O, T extends TargetEl = HTMLInputElement> = [
-  O | undefined,
+  O,
   InputProps<T>
 ];
 
 export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
   options?:RxInputOptions<O>
-): RxInputState<O, T>;
+): RxInputState<string | O | undefined, T>;
 ```
 
 ### Basic
