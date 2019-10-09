@@ -21,7 +21,6 @@ interface State<T> {
   loading: boolean;
   error?: any;
   data?: T;
-  previous?: T;
 }
 
 type Actions<T> =
@@ -41,17 +40,13 @@ function init<T>(data?: T): State<T> {
 function reducer<T>(state: State<T>, action: Actions<T>): State<T> {
   switch (action.type) {
     case 'FETCH_INIT':
-      return { ...init(state.previous), loading: true, previous: state.data };
+      return { ...init(state.data), loading: true };
     case 'FETCH_SUCCESS':
       return { ...state, loading: false, data: action.payload };
     case 'FETCH_FAILURE':
       return { ...state, loading: false, error: action.payload };
     case 'CANCEL':
-      return {
-        ...state,
-        ...(state.loading && { data: state.previous }),
-        loading: false,
-      };
+      return { ...state, loading: false };
     case 'RESET':
       return { ...init(action.payload) };
     default:
@@ -109,7 +104,10 @@ export function useRxAsync<T, O = T>(
     dispatch({ type: 'CANCEL' });
   }, [dispatch, subscription]);
 
-  const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
+  const reset = useCallback(
+    () => dispatch({ type: 'RESET', payload: initialValue }),
+    [initialValue]
+  );
 
   useEffect(() => {
     !defer && run();
