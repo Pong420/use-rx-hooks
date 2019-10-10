@@ -7,7 +7,6 @@ const double: RxInputPipe<number> = ob =>
 
 export const Double = () => {
   const [value, inputProps] = useRxInput({ pipe: double });
-  console.log(value);
   return (
     <>
       <input {...inputProps} />

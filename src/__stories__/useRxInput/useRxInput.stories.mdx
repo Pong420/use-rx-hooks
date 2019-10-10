@@ -32,7 +32,7 @@ interface InputProps<T extends TargetEl = HTMLInputElement> {
   defaultValue?: string;
 }
 
-type RxInputPipe<O> = (ob: Observable<string | undefined>) => Observable<O>;
+export type RxInputPipe<O> = (ob: Observable<string>) => Observable<O>;
 
 export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
   interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;

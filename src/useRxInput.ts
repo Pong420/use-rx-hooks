@@ -21,7 +21,7 @@ export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
   pipe?: RxInputPipe<O>;
 }
 
-export type RxInputState<O = string, T extends TargetEl = HTMLInputElement> = [
+export type RxInputState<O, T extends TargetEl = HTMLInputElement> = [
   O,
   InputProps<T>
 ];
@@ -32,7 +32,7 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
 
 export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
   options?: RxInputOptions<O, T> & { pipe: RxInputPipe<O> }
-): RxInputState<O, T>;
+): RxInputState<undefined | O, T>;
 
 export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
   defaultValue = '',
@@ -40,7 +40,9 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
   pipe,
 }: RxInputOptions<O, T> = {}): RxInputState<string | O | undefined, T> {
   const ref = useRef<T>(null);
-  const [value, setValue] = useState<O>();
+  const [value, setValue] = useState<string | O | undefined>(
+    typeof pipe === 'undefined' ? defaultValue : undefined
+  );
 
   useEffect(() => {
     const el = ref.current;
