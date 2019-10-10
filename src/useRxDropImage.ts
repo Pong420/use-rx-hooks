@@ -1,25 +1,29 @@
-import { fromEvent, merge } from 'rxjs';
-import { map, filter, tap } from 'rxjs/operators';
-import { useRxFileToImage, RxFileToImageState } from './useRxFileToImage';
-import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
+import { DragEvent, useRef, useCallback } from 'react';
+import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { useRxFileToImage } from './useRxFileToImage';
 
-export function fromDropEvent<T extends Event>(el: FromEventTarget<T>) {
-  return merge(
-    fromEvent<T>(el, 'drop'),
-    fromEvent<T>(el, 'dragover').pipe(tap(event => event.preventDefault()))
-  ).pipe(
-    filter(event => event.type === 'drop'),
-    map((event: any) => event as DragEvent),
-    map<DragEvent, [DataTransferItemList | null, Event]>(dragEvent => [
-      dragEvent.dataTransfer && dragEvent.dataTransfer.items,
-      dragEvent,
-    ])
-  );
+export function fromDropImageEvent<T extends Element | Window>(
+  dragEvent: DragEvent<T>
+) {
+  return [
+    dragEvent.dataTransfer && dragEvent.dataTransfer.items,
+    dragEvent,
+  ] as [DataTransferItemList | null, DragEvent<T>];
 }
 
-export function useRxDropImage<
-  T extends HTMLElement,
-  E extends Event = Event
->(): RxFileToImageState<T> {
-  return useRxFileToImage<T, E>(fromDropEvent);
+const onDragOver = <T extends Window | Element>(event: DragEvent<T>) =>
+  event.preventDefault();
+
+export function useRxDropImage<T extends Window | Element>() {
+  const subject = useRef(new Subject<DragEvent<T>>());
+  const onDrop = useCallback((event: DragEvent<T>) => {
+    subject.current.next(event);
+  }, []);
+
+  const props = { onDrop, onDragOver };
+  const state = useRxFileToImage(
+    subject.current.asObservable().pipe(map(fromDropImageEvent))
+  );
+  return [state, props];
 }

@@ -3,7 +3,7 @@ import { useRxPasteImage } from '../../useRxPasteImage';
 import { Display } from './Display';
 
 export const PasteImage = () => {
-  const [image, props] = useRxPasteImage<HTMLInputElement>();
+  const [image, props] = useRxPasteImage();
 
   return (
     <>

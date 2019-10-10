@@ -3,7 +3,7 @@ import { useRxDropImage } from '../../useRxDropImage';
 import { Display } from './Display';
 
 export const DropImage = () => {
-  const [image, props] = useRxDropImage<HTMLDivElement>();
+  const [image, props] = useRxDropImage();
 
   return (
     <>

@@ -1,23 +1,24 @@
-import { fromEvent } from 'rxjs';
+import { ClipboardEvent, useRef } from 'react';
+import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { useRxFileToImage, RxFileToImageState } from './useRxFileToImage';
-import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
+import { useRxFileToImage } from './useRxFileToImage';
 
-export function fromPasteEvent<E>(el: FromEventTarget<E>) {
-  return fromEvent(el, 'paste').pipe(
-    map((event: any) => event as ClipboardEvent),
-    map<ClipboardEvent, [DataTransferItemList | null, Event]>(
-      clipboardEvent => [
-        clipboardEvent.clipboardData && clipboardEvent.clipboardData.items,
-        clipboardEvent,
-      ]
-    )
-  );
+export function fromPasteImageEvent<T extends Window | Element>(
+  clipboardEvent: ClipboardEvent<T>
+) {
+  return [
+    clipboardEvent.clipboardData && clipboardEvent.clipboardData.items,
+    clipboardEvent,
+  ] as [DataTransferItemList | null, ClipboardEvent<T>];
 }
 
-export function useRxPasteImage<
-  T extends HTMLElement,
-  E extends Event = Event
->(): RxFileToImageState<T> {
-  return useRxFileToImage<T, E>(fromPasteEvent);
+export function useRxPasteImage<T extends Window | Element>() {
+  const subject = useRef(new Subject<ClipboardEvent<T>>());
+  const onPaste = (event: ClipboardEvent<T>) => subject.current.next(event);
+
+  const props = { onPaste };
+  const state = useRxFileToImage(
+    subject.current.asObservable().pipe(map(fromPasteImageEvent))
+  );
+  return [state, props];
 }

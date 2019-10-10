@@ -13,7 +13,7 @@ import windowCode from '!!raw-loader!./Window.tsx';
 # useRxFileToImage
 
 ```js
-const [state?, props] = useRxFileToImage(fn);
+const [state?, props] = useRxFileToImage(...source$);
 
 // HOC of `useRxFileToImage`
 const [state?, props] = useRxDropImage();
@@ -23,35 +23,19 @@ const [state?, props] = useRxPasteImage();
 ## Typings
 
 ```js
-import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
-export type RxFileToImageInput<E> = (
-  target: FromEventTarget<E>
-) => Observable<[DataTransferItemList | null, Event]>;
+type Source = Observable<[DataTransferItemList | null, Event | SyntheticEvent]>;
 
-export type RxFileToImageState<T> = [
-  State | undefined,
-  {
-    ref: RefObject<T>;
-  }
-];
-
-interface State {
-  file: File;
+export interface RxFileToImageState {
   url: string;
+  file: File | null;
   type: string;
 }
 
-interface Props<T> {
-  ref: RefObject<T>;
-}
+export function useRxFileToImage(...source$: Source[]): RxFileToImageState:
 
-export function useRxFileToImage<T extends HTMLElement, E extends Event>(
-  fn: RxFileToImageInput<E>
-): RxFileToImageState<T>:
-
-export function useRxDropImage<T>(): RxFileToImageState<T>;
-export function useRxPasteImage<T>(): RxFileToImageState<T>;
+export function useRxDropImage(): [RxFileToImageState, { onPaste }];
+export function useRxPasteImage(): [RxFileToImageState, { onDrop, onDragOver }];
 ```
 
 ### Paste Image
@@ -68,7 +52,7 @@ export function useRxPasteImage<T>(): RxFileToImageState<T>;
 
 ### Custom
 
-> you could import `fromDropEvent`, `fromPasteEvent`, `useRxFileToImage` from this libaray
+> you could import `fromDropImageEvent`, `fromPasteImageEvent`, `useRxFileToImage` from this libaray
 
 An example
 

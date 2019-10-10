@@ -1,71 +1,60 @@
-import { Observable, empty } from 'rxjs';
+import { SyntheticEvent } from 'react';
+import { Observable, empty, merge } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { useEffect, useState, useRef, RefObject } from 'react';
-import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
+import { useEffect, useState } from 'react';
 
-interface GetBase64ImageArgs {
+interface GetBase64ImageParams {
   file: File | null;
   type: string;
 }
 
-interface State extends GetBase64ImageArgs {
+export interface RxFileToImageState extends GetBase64ImageParams {
   url: string;
 }
 
-export type RxFileToImageState<T> = [
-  State | undefined,
-  {
-    ref: RefObject<T>;
-  }
-];
-
-export type RxFileToImageInput<E> = (
-  target: FromEventTarget<E>
-) => Observable<[DataTransferItemList | null, Event]>;
-
-export function useRxFileToImage<T extends HTMLElement, E extends Event>(
-  fn: RxFileToImageInput<E>
-): RxFileToImageState<T> {
-  const [state, setState] = useState<State>();
-  const ref = useRef<T>(null);
+export function useRxFileToImage(
+  ...source$: Array<
+    Observable<
+      [DataTransferItemList | null, Event | SyntheticEvent<Element | Window>]
+    >
+  >
+) {
+  const [state, setState] = useState<RxFileToImageState>();
 
   useEffect(() => {
-    const target = ref.current;
-    if (target) {
-      const subscription = fn(target)
-        .pipe(
-          map(([items, event]) => {
-            if (items && items.length) {
-              for (let i = 0; i < items.length; i++) {
-                if (items[i].type.indexOf('image') !== -1) {
-                  event.preventDefault();
-                  return {
-                    file: items[i].getAsFile(),
-                    type: items[i].type,
-                  };
-                }
+    const subscription = merge(...source$)
+      .pipe(
+        map(([items, event]) => {
+          if (items && items.length) {
+            for (let i = 0; i < items.length; i++) {
+              if (items[i].type.indexOf('image') !== -1) {
+                event.preventDefault();
+                return {
+                  file: items[i].getAsFile(),
+                  type: items[i].type,
+                };
               }
             }
-            return null;
-          }),
-          switchMap(state =>
-            state
-              ? getBase64ImageURL(state).pipe(
-                  map<string, State>(url => ({ url, ...state }))
-                )
-              : empty()
-          )
+          }
+          return null;
+        }),
+        switchMap(state =>
+          state
+            ? getBase64ImageURL(state).pipe(
+                map<string, RxFileToImageState>(url => ({ url, ...state }))
+              )
+            : empty()
         )
-        .subscribe(setState);
+      )
+      .subscribe(setState);
 
-      return () => subscription.unsubscribe();
-    }
-  }, [fn]);
+    return () => subscription.unsubscribe();
+  }, [source$]);
 
-  return [state, { ref }];
+  return state;
 }
 
-const getBase64ImageURL = ({ file, type }: GetBase64ImageArgs) => {
+const getBase64ImageURL = ({ file, type }: GetBase64ImageParams) => {
   return new Observable<string>(observer => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
