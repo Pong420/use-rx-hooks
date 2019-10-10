@@ -9,7 +9,7 @@ export const Double = () => {
   const [value, inputProps] = useRxInput({ pipe: double });
   return (
     <>
-      <input {...inputProps} />
+      <input type="number" {...inputProps} />
       <pre>{value}</pre>
     </>
   );

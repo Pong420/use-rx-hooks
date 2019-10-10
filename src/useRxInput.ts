@@ -1,73 +1,64 @@
-import { useRef, useEffect, useState, RefObject } from 'react';
-import { Observable, fromEvent } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import {
+  useRef,
+  useEffect,
+  useState,
+  ChangeEvent,
+  useCallback,
+  InputHTMLAttributes,
+} from 'react';
+import { Observable, Subject, pipe as rxPipe } from 'rxjs';
+import { map, startWith, tap } from 'rxjs/operators';
 
-type TargetEl = HTMLInputElement | HTMLTextAreaElement;
+export type RxInputEl = HTMLInputElement | HTMLTextAreaElement;
 
-interface ChangeEvent<T = Element> extends Event {
-  target: EventTarget & T & { value: string };
-}
+export type RxInputPipe<O> = (ob: Observable<string>) => Observable<string | O>;
 
-interface InputProps<T extends TargetEl = HTMLInputElement> {
-  ref: RefObject<T>;
-  defaultValue?: string;
-}
-
-export type RxInputPipe<O> = (ob: Observable<string>) => Observable<O>;
-
-export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
-  interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;
+export interface RxInputOptions<O> {
+  test?: any;
   defaultValue?: string;
   pipe?: RxInputPipe<O>;
 }
 
-export type RxInputState<O, T extends TargetEl = HTMLInputElement> = [
+type State<O, T extends RxInputEl = HTMLInputElement> = [
   O,
-  InputProps<T>
+  Required<Pick<InputHTMLAttributes<T>, 'value' | 'onChange'>>
 ];
 
-export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
-  options?: RxInputOptions<O, T> & { pipe?: undefined }
-): RxInputState<string, T>;
+export function useRxInput<O, T extends RxInputEl = HTMLInputElement>(
+  options?: RxInputOptions<O> & { pipe?: undefined }
+): State<string, T>;
 
-export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
-  options?: RxInputOptions<O, T> & { pipe: RxInputPipe<O> }
-): RxInputState<undefined | O, T>;
+export function useRxInput<O, T extends RxInputEl = HTMLInputElement>(
+  options?: RxInputOptions<O> & { pipe: RxInputPipe<O> }
+): State<undefined | O, T>;
 
-export function useRxInput<O, T extends TargetEl = HTMLInputElement>({
+export function useRxInput<O, T extends RxInputEl = HTMLInputElement>({
   defaultValue = '',
-  interceptors,
   pipe,
-}: RxInputOptions<O, T> = {}): RxInputState<string | O | undefined, T> {
-  const ref = useRef<T>(null);
-  const [value, setValue] = useState<string | O | undefined>(
+}: RxInputOptions<O> = {}): State<O | string | undefined, T> {
+  const subject = useRef(new Subject<ChangeEvent<T>>());
+  const [value, setValue] = useState<string>(defaultValue);
+  const [output, setOutput] = useState<O | string | undefined>(
     typeof pipe === 'undefined' ? defaultValue : undefined
   );
 
+  const handleChange = useCallback(
+    (event: ChangeEvent<T>) => subject.current.next(event),
+    []
+  );
+
   useEffect(() => {
-    const el = ref.current;
-    if (el) {
-      let source$: Observable<any> = fromEvent(el, 'input').pipe(
-        interceptors ? interceptors(el) : map(evt => evt),
-        map(evt => evt as ChangeEvent<T>),
+    const subsciprtion = subject.current
+      .pipe(
         map(evt => evt.target.value),
-        startWith(defaultValue)
-      );
+        tap(next => setValue(next)),
+        startWith(defaultValue),
+        pipe || rxPipe()
+      )
+      .subscribe(setOutput);
 
-      if (pipe) {
-        source$ = source$.pipe(pipe);
-      }
+    return () => subsciprtion.unsubscribe();
+  }, [defaultValue, pipe]);
 
-      const subscription = source$.subscribe(setValue);
-      return () => subscription.unsubscribe();
-    }
-  }, [pipe, defaultValue, interceptors]);
-
-  return [
-    value,
-    {
-      ref,
-      defaultValue,
-    },
-  ];
+  return [output, { value, onChange: handleChange }];
 }

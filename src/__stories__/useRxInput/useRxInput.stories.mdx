@@ -19,47 +19,45 @@ import doubleCode from '!!raw-loader!./Double.tsx';
 
 ```js
 const [value, inputProps] = useRxInput(options?);
+const [value, inputProps] = useRxInputComposing(options?);
 ```
 
 ## Typings
 
 ```js
+export type RxInputEl = HTMLInputElement | HTMLTextAreaElement;
 
-type TargetEl = HTMLInputElement | HTMLTextAreaElement;
+export type RxInputPipe<O> = (ob: Observable<string>) => Observable<string | O>;
 
-interface InputProps<T extends TargetEl = HTMLInputElement> {
-  ref: RefObject<T>;
-  defaultValue?: string;
-}
-
-export type RxInputPipe<O> = (ob: Observable<string>) => Observable<O>;
-
-export interface RxInputOptions<O, T extends TargetEl = HTMLInputElement> {
-  interceptors?: (el: T) => (ob: Observable<Event>) => Observable<Event>;
+export interface RxInputOptions<O> {
   defaultValue?: string;
   pipe?: RxInputPipe<O>;
 }
 
-export type RxInputState<O, T extends TargetEl = HTMLInputElement> = [
-  O,
-  InputProps<T>
+export function useRxInput<O, T extends RxInputEl = HTMLInputElement>(
+  options?: RxInputOptions<O>
+): [
+  string | O | undefined,
+  Required<Pick<InputHTMLAttributes<T>, 'value' | 'onChange'>>
 ];
 
-export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
-  options?:RxInputOptions<O>
-): RxInputState<string | O | undefined, T>;
+export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>(
+  options?: RxInputOptions<O>
+): [
+  string | O | undefined,
+  Required<
+    Pick<
+      InputHTMLAttributes<T>,
+      'value' | 'onChange' | 'onCompositionStart' | 'onCompositionEnd'
+    >
+  >
+];
 ```
 
-### Basic
+## Basic
 
 <Preview name="Basic" code={basicCode}>
   <Basic />
-</Preview>
-
-## Composing
-
-<Preview name="Composing" code={composingCode}>
-  <Composing />
 </Preview>
 
 ## With default value
@@ -68,7 +66,13 @@ export function useRxInput<O, T extends TargetEl = HTMLInputElement>(
   <DefaultValue />
 </Preview>
 
-## Debounce 1 second (Pipe)
+## Ignore value change while composing
+
+<Preview name="Composing" code={composingCode}>
+  <Composing />
+</Preview>
+
+## Debounce 1 second
 
 <Preview name="Debounce" code={debounceCode}>
   <Debounce />
