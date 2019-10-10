@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useRxAsync } from './useRxAsync';
+import { useRxAsync } from '../useRxAsync';
 
 const delay = (ms: number) => new Promise(_ => setTimeout(_, ms));
 const request = () => delay(0).then(() => 1);
