@@ -1,0 +1,39 @@
+import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
+import { Preview } from '../utils';
+import { Basic } from './Basic.tsx';
+import { Window } from './Window.tsx';
+
+import basicCode from '!!raw-loader!./Basic.tsx';
+import windowCode from '!!raw-loader!./Window.tsx';
+
+<Meta title="useRxScroll" />
+
+# useRxScroll
+
+```js
+const [state, props] = useRxScroll(ob?);
+```
+
+## Typings
+
+```js
+import { UIEvent } from 'react';
+
+export interface RxScrollState {
+  x: number;
+  y: number;
+  scrolling: boolean;
+}
+
+export function useRxScroll(ob?: Observable<UIEvent<T>>): [RxFileToImageState, { onScroll }]:
+```
+
+## Basic
+
+<Preview name="Basic" code={basicCode}>
+  <Basic />
+</Preview>
+
+## Use with window
+
+<Source code={windowCode} language="jsx" />
