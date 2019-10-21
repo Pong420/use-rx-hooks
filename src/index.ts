@@ -1,4 +1,4 @@
-export * from './useRxAsync';
+export * from 'use-rx-async';
 export * from './useRxInput';
 export * from './useRxFileToImage';
 export * from './useRxDropImage';

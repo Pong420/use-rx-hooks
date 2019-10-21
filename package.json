@@ -38,7 +38,7 @@
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "rxjs": "6.5.3"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",
@@ -87,5 +87,8 @@
       "prettier --ignore-path .eslintignore --write",
       "git add"
     ]
+  },
+  "dependencies": {
+    "use-rx-async": "^1.0.0"
   }
 }
