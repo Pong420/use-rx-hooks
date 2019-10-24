@@ -6,7 +6,7 @@
 yarn add use-rx-hooks
 ```
 
-[More hooks & Docs](https://pong420.github.io/use-rx-hooks/?path=/story/userxinput--page)
+[Docs](https://pong420.github.io/use-rx-hooks/?path=/story)
 
 ## License
 
