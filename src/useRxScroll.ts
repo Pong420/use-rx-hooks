@@ -46,5 +46,5 @@ export function useRxScroll<T extends Window | Element>(
 
   const props = { onScroll };
 
-  return [state, props] as [RxScrollState, typeof props];
+  return [state, props] as const;
 }

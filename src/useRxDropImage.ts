@@ -21,9 +21,9 @@ export function useRxDropImage<T extends Window | Element>() {
     subject.current.next(event);
   }, []);
 
-  const props = { onDrop, onDragOver };
   const state = useRxFileToImage(
     subject.current.asObservable().pipe(map(fromDropImageEvent))
   );
-  return [state, props];
+
+  return [state, { onDrop, onDragOver }] as const;
 }
