@@ -3,22 +3,17 @@ import { Observable, empty, merge } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { useEffect, useState } from 'react';
 
-interface GetBase64ImageParams {
-  file: File | null;
-  type: string;
-}
+type Source = [
+  FileList | DataTransferItemList | null,
+  Event | SyntheticEvent<Element | Window>
+];
 
-export interface RxFileToImageState extends GetBase64ImageParams {
+export interface RxFileToImageState {
+  file: File;
   url: string;
 }
 
-export function useRxFileToImage(
-  ...source$: Array<
-    Observable<
-      [DataTransferItemList | null, Event | SyntheticEvent<Element | Window>]
-    >
-  >
-) {
+export function useRxFileToImage(...source$: Array<Observable<Source>>) {
   const [state, setState] = useState<RxFileToImageState>();
 
   useEffect(() => {
@@ -27,21 +22,19 @@ export function useRxFileToImage(
         map(([items, event]) => {
           if (items && items.length) {
             for (let i = 0; i < items.length; i++) {
-              if (items[i].type.indexOf('image') !== -1) {
+              const item = items[i];
+              if (item.type.indexOf('image') !== -1) {
                 event.preventDefault();
-                return {
-                  file: items[i].getAsFile(),
-                  type: items[i].type,
-                };
+                return item instanceof File ? item : item.getAsFile();
               }
             }
           }
           return null;
         }),
-        switchMap(state =>
-          state
-            ? getBase64ImageURL(state).pipe(
-                map<string, RxFileToImageState>(url => ({ url, ...state }))
+        switchMap(file =>
+          file
+            ? getBase64ImageURL(file).pipe(
+                map<string, RxFileToImageState>(url => ({ url, file }))
               )
             : empty()
         )
@@ -54,7 +47,7 @@ export function useRxFileToImage(
   return state;
 }
 
-const getBase64ImageURL = ({ file, type }: GetBase64ImageParams) => {
+const getBase64ImageURL = (file: File) => {
   return new Observable<string>(observer => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -64,7 +57,7 @@ const getBase64ImageURL = ({ file, type }: GetBase64ImageParams) => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx!.drawImage(img, 0, 0);
-      observer.next(canvas.toDataURL(type));
+      observer.next(canvas.toDataURL(file.type));
     };
 
     img.src = URL.createObjectURL(file);

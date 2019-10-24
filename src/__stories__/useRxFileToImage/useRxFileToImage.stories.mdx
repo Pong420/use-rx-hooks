@@ -1,9 +1,11 @@
 import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
 import { Preview } from '../utils';
+import { UploadImage } from './UploadImage.tsx';
 import { PasteImage } from './PasteImage.tsx';
 import { DropImage } from './DropImage.tsx';
 import { Window } from './Window.tsx';
 
+import uploadImageCode from '!!raw-loader!./UploadImage.tsx';
 import pasteImageCode from '!!raw-loader!./PasteImage.tsx';
 import dropImageCode from '!!raw-loader!./DropImage.tsx';
 import windowCode from '!!raw-loader!./Window.tsx';
@@ -16,6 +18,7 @@ import windowCode from '!!raw-loader!./Window.tsx';
 const [state?, props] = useRxFileToImage(...source$);
 
 // HOC of `useRxFileToImage`
+const [state?, props] = useRxUploadImage();
 const [state?, props] = useRxDropImage();
 const [state?, props] = useRxPasteImage();
 ```
@@ -24,19 +27,28 @@ const [state?, props] = useRxPasteImage();
 
 ```js
 
-type Source = Observable<[DataTransferItemList | null, Event | SyntheticEvent]>;
+type Source = [
+  FileList | DataTransferItemList | null,
+  Event | SyntheticEvent<Element | Window>
+];
 
 export interface RxFileToImageState {
+  file: File;
   url: string;
-  file: File | null;
-  type: string;
 }
 
-export function useRxFileToImage(...source$: Source[]): RxFileToImageState:
+export function useRxFileToImage(...source$: Array<Observable<Source>>): RxFileToImageState:
 
-export function useRxDropImage(): [RxFileToImageState, { onPaste }];
-export function useRxPasteImage(): [RxFileToImageState, { onDrop, onDragOver }];
+export function useRxUploadImage(): [RxFileToImageState | undefined, { onChange }];
+export function useRxDropImage(): [RxFileToImageState | undefined, { onPaste }];
+export function useRxPasteImage(): [RxFileToImageState | undefined, { onDrop, onDragOver }];
 ```
+
+## Upload Image
+
+<Preview name="Upload Image" code={uploadImageCode}>
+  <UploadImage />
+</Preview>
 
 ## Paste Image
 
