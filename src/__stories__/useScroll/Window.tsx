@@ -18,7 +18,7 @@ export function Window2() {
   useEffect(() => {
     const handler = (event: any) => onScroll(event as UIEvent);
     window.addEventListener('scroll', handler);
-    return () => window.addEventListener('scroll', handler);
+    return () => window.removeEventListener('scroll', handler);
   }, [onScroll]);
 
   return <pre>{JSON.stringify(state, null, 2)}</pre>;

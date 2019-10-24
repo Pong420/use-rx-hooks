@@ -1,0 +1,54 @@
+import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
+import { Preview } from '../utils';
+import { Basic } from './Basic.tsx';
+import { Search } from './Search.tsx';
+
+import basicCode from '!!raw-loader!./Basic.tsx';
+
+<Meta title="useRxInputComposing" />
+
+# useRxInputComposing
+
+HOC of `useRxInput`. `value` will not change while input is composing
+
+```js
+const [value, inputProps] = useRxInputComposing(options?);
+```
+
+## Typings
+
+```js
+export type RxInputEl = HTMLInputElement | HTMLTextAreaElement;
+
+export type RxInputPipe<O> = (ob: Observable<string>) => Observable<string | O>;
+
+export interface RxInputOptions<O> {
+  defaultValue?: string;
+  pipe?: RxInputPipe<O>;
+}
+
+
+export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>(
+  options?: RxInputOptions<O>
+): [
+  string | O | undefined,
+  Required<
+    Pick<
+      InputHTMLAttributes<T>,
+      'value' | 'onChange' | 'onCompositionStart' | 'onCompositionEnd'
+    >
+  >
+];
+```
+
+## Basic
+
+<Preview name="Basic" code={basicCode}>
+  <Basic />
+</Preview>
+
+## Search
+
+<Preview name="Search" code={basicCode}>
+  <Search />
+</Preview>

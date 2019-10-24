@@ -1,14 +1,11 @@
 import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
-import { useRxInput } from '../../useRxInput';
 import { Preview } from '../utils';
 import { Basic } from './Basic.tsx';
-import { Composing } from './Composing.tsx';
 import { DefaultValue } from './DefaultValue.tsx';
 import { Debounce } from './Debounce.tsx';
 import { Double } from './Double.tsx';
 
 import basicCode from '!!raw-loader!./Basic.tsx';
-import composingCode from '!!raw-loader!./Composing.tsx';
 import defaultValueCode from '!!raw-loader!./DefaultValue.tsx';
 import debounceCode from '!!raw-loader!./Debounce.tsx';
 import doubleCode from '!!raw-loader!./Double.tsx';
@@ -19,7 +16,6 @@ import doubleCode from '!!raw-loader!./Double.tsx';
 
 ```js
 const [value, inputProps] = useRxInput(options?);
-const [value, inputProps] = useRxInputComposing(options?);
 ```
 
 ## Typings
@@ -40,18 +36,6 @@ export function useRxInput<O, T extends RxInputEl = HTMLInputElement>(
   string | O | undefined,
   Required<Pick<InputHTMLAttributes<T>, 'value' | 'onChange'>>
 ];
-
-export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>(
-  options?: RxInputOptions<O>
-): [
-  string | O | undefined,
-  Required<
-    Pick<
-      InputHTMLAttributes<T>,
-      'value' | 'onChange' | 'onCompositionStart' | 'onCompositionEnd'
-    >
-  >
-];
 ```
 
 ## Basic
@@ -64,12 +48,6 @@ export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>(
 
 <Preview name="Default Value" code={defaultValueCode}>
   <DefaultValue />
-</Preview>
-
-## Ignore value change while composing
-
-<Preview name="Composing" code={composingCode}>
-  <Composing />
 </Preview>
 
 ## Debounce 1 second

@@ -1,13 +1,12 @@
 import React from 'react';
 import { useRxInputComposing } from '../../useRxInputComposing';
 
-export const Composing = () => {
+export const Basic = () => {
   const [value, inputProps] = useRxInputComposing();
-
   return (
     <>
-      <input {...inputProps} />
       <pre>{value}</pre>
+      <input {...inputProps} />
     </>
   );
 };
