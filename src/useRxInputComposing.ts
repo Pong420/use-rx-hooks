@@ -8,15 +8,17 @@ import {
   RxInputEl,
 } from './useRxInput';
 
-type State<O, T extends RxInputEl = HTMLInputElement> = [
-  O,
-  Required<
+interface InputProps<T>
+  extends Required<
     Pick<
       InputHTMLAttributes<T>,
-      'value' | 'onChange' | 'onCompositionStart' | 'onCompositionEnd'
+      'onChange' | 'onCompositionStart' | 'onCompositionEnd'
     >
-  >
-];
+  > {
+  value: string;
+}
+
+type State<O, T extends RxInputEl = HTMLInputElement> = [O, InputProps<T>];
 
 export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>(
   options?: RxInputOptions<O> & { pipe?: undefined }

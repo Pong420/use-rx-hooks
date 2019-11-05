@@ -89,6 +89,6 @@
     ]
   },
   "dependencies": {
-    "use-rx-async": "^1.0.1"
+    "use-rx-async": "^1.0.2"
   }
 }

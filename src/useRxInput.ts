@@ -9,7 +9,10 @@ import {
 import { Observable, Subject, pipe as rxPipe } from 'rxjs';
 import { map, startWith, tap } from 'rxjs/operators';
 
-export type RxInputEl = HTMLInputElement | HTMLTextAreaElement;
+export type RxInputEl =
+  | HTMLInputElement
+  | HTMLTextAreaElement
+  | HTMLSelectElement;
 
 export type RxInputPipe<O> = (ob: Observable<string>) => Observable<string | O>;
 
@@ -21,7 +24,7 @@ export interface RxInputOptions<O> {
 
 type State<O, T extends RxInputEl = HTMLInputElement> = [
   O,
-  Required<Pick<InputHTMLAttributes<T>, 'value' | 'onChange'>>
+  { value: string; onChange: NonNullable<InputHTMLAttributes<T>['onChange']> }
 ];
 
 export function useRxInput<O, T extends RxInputEl = HTMLInputElement>(
