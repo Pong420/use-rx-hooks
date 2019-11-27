@@ -11426,10 +11426,10 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-use-rx-async@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/use-rx-async/-/use-rx-async-1.1.1.tgz#2e092b61a8a94ffb1b8eaa77d8588bedd9549989"
-  integrity sha512-U95I1Yoqy6hX+AQLFsPo18SFJOIIDd2Zm5jZW19WD2/yox/5hz15fE4KwwMwoaxQ7GGkCwtop2H6nskZmAKiJw==
+use-rx-async@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/use-rx-async/-/use-rx-async-1.1.2.tgz#14335a54be001c25d6b33a23ab94778a4facdc0c"
+  integrity sha512-CIJypMvmKVW7BGLrv++CsIg9xD0pEfHcmyDiHG+nXZtFzv4hhqvrsEAFkYy1XQ+TCtRXjCXQ9oL9ESG9Yjayiw==
 
 use@^3.1.0:
   version "3.1.1"
