@@ -1,6 +1,6 @@
 # use-rx-hooks
 
-> react hooks with rxjs
+> collection of React hooks with RxJS
 
 ```
 yarn add use-rx-hooks
