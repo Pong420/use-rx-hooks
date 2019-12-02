@@ -1,6 +1,6 @@
-import React, { ClipboardEvent, DragEvent, useEffect } from 'react';
-import { fromEvent } from 'rxjs';
-import { map } from 'rxjs/operators';
+import React, { ClipboardEvent, DragEvent } from 'react';
+import { merge, fromEvent } from 'rxjs';
+import { map, tap, filter } from 'rxjs/operators';
 import { fromDropImageEvent } from '../../useRxDropImage';
 import { fromPasteImageEvent } from '../../useRxPasteImage';
 import { useRxFileToImage } from '../../useRxFileToImage';
@@ -10,19 +10,18 @@ const paste$ = fromEvent<ClipboardEvent<Window>>(window, 'paste').pipe(
   map(fromPasteImageEvent)
 );
 
-const drop$ = fromEvent<DragEvent<Window>>(window, 'drop').pipe(
+const drop$ = merge(
+  fromEvent<DragEvent<Window>>(window, 'drop'),
+  fromEvent<DragEvent<Window>>(window, 'dragover').pipe(
+    tap(event => event.preventDefault())
+  )
+).pipe(
+  filter(event => event.type === 'drop'),
   map(fromDropImageEvent)
 );
 
-const preventDefault = (evt: Event) => evt.preventDefault();
-
 export const Window = () => {
   const image = useRxFileToImage(paste$, drop$);
-
-  useEffect(() => {
-    window.addEventListener('dragover', preventDefault);
-    return () => window.removeEventListener('dragover', preventDefault);
-  }, []);
 
   return <Display image={image} />;
 };
