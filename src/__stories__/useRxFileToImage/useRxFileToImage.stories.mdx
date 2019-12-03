@@ -3,11 +3,13 @@ import { Preview } from '../utils';
 import { UploadImage } from './UploadImage.tsx';
 import { PasteImage } from './PasteImage.tsx';
 import { DropImage } from './DropImage.tsx';
+import { MixTogether } from './MixTogether.tsx';
 import { Window } from './Window.tsx';
 
 import uploadImageCode from '!!raw-loader!./UploadImage.tsx';
 import pasteImageCode from '!!raw-loader!./PasteImage.tsx';
 import dropImageCode from '!!raw-loader!./DropImage.tsx';
+import mixTogetherCode from '!!raw-loader!./MixTogether.tsx';
 import windowCode from '!!raw-loader!./Window.tsx';
 
 <Meta title="useRxFileToImage" />
@@ -60,6 +62,12 @@ export function useRxPasteImage(): [RxFileToImageState | undefined, { onDrop, on
 
 <Preview name="Drop Image" code={dropImageCode}>
   <DropImage />
+</Preview>
+
+## Mix Together
+
+<Preview name="Mix Together" code={mixTogetherCode}>
+  <MixTogether />
 </Preview>
 
 ## Custom
