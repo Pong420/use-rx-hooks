@@ -17,7 +17,7 @@ export function useRxPasteImage<T extends Window | Element>() {
   const onPaste = (event: ClipboardEvent<T>) => subject.current.next(event);
 
   const state = useRxFileToImage(
-    subject.current.asObservable().pipe(map(fromPasteImageEvent))
+    subject.current.pipe(map(fromPasteImageEvent))
   );
 
   return [state, { onPaste }] as const;

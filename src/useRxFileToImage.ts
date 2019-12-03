@@ -41,7 +41,10 @@ export function useRxFileToImage(...source$: Array<Observable<Source>>) {
       )
       .subscribe(setState);
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      setState(undefined);
+    };
   }, [source$]);
 
   return state;

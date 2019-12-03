@@ -12,8 +12,9 @@ export function fromDropImageEvent<T extends Element | Window>(
   ] as [DataTransferItemList | null, DragEvent<T>];
 }
 
-const onDragOver = <T extends Window | Element>(event: DragEvent<T>) =>
-  event.preventDefault();
+export const preventDragOver = <T extends Window | Element>(
+  event: DragEvent<T>
+) => event.preventDefault();
 
 export function useRxDropImage<T extends Window | Element>() {
   const subject = useRef(new Subject<DragEvent<T>>());
@@ -21,9 +22,7 @@ export function useRxDropImage<T extends Window | Element>() {
     subject.current.next(event);
   }, []);
 
-  const state = useRxFileToImage(
-    subject.current.asObservable().pipe(map(fromDropImageEvent))
-  );
+  const state = useRxFileToImage(subject.current.pipe(map(fromDropImageEvent)));
 
-  return [state, { onDrop, onDragOver }] as const;
+  return [state, { onDrop, onDragOver: preventDragOver }] as const;
 }

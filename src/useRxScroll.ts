@@ -14,6 +14,12 @@ function getPos(el: Window | Element): Pick<RxScrollState, 'x' | 'y'> {
     : { x: el.scrollTop, y: el.scrollLeft };
 }
 
+const initialState: RxScrollState = {
+  x: 0,
+  y: 0,
+  scrolling: false,
+};
+
 export function useRxScroll<T extends Window | Element>(
   ob?: Observable<UIEvent<T>>
 ) {
@@ -22,14 +28,10 @@ export function useRxScroll<T extends Window | Element>(
     (event: UIEvent<T>) => subject.current.next(event),
     []
   );
-  const [state, setState] = useState<RxScrollState>({
-    x: 0,
-    y: 0,
-    scrolling: false,
-  });
+  const [state, setState] = useState(initialState);
 
   useEffect(() => {
-    const subscription = (ob || subject.current.asObservable())
+    const subscription = (ob || subject.current)
       .pipe(
         map(event => ({
           ...getPos(event.currentTarget),
@@ -41,7 +43,10 @@ export function useRxScroll<T extends Window | Element>(
       )
       .subscribe();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      setState(initialState);
+    };
   }, [ob]);
 
   const props = { onScroll };
