@@ -17,5 +17,5 @@ export function useRxUploadImage() {
 
   const props = { onChange };
   const state = useRxFileToImage(subject.current.pipe(map(fromChangeEvent)));
-  return [state, props];
+  return [state, props] as const;
 }
