@@ -8,7 +8,7 @@ export const PasteImage = () => {
   return (
     <>
       <input {...props} placeholder="Paste image here" />
-      <Display image={image}></Display>
+      <Display payload={image}></Display>
     </>
   );
 };

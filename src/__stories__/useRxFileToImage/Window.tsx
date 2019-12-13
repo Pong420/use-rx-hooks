@@ -20,8 +20,9 @@ const drop$ = merge(
   map(fromDropImageEvent)
 );
 
-export const Window = () => {
-  const image = useRxFileToImage(paste$, drop$);
+const source$ = [paste$, drop$];
 
-  return <Display image={image} />;
+export const Window = () => {
+  const image = useRxFileToImage(source$);
+  return <Display payload={image} />;
 };

@@ -1,7 +1,6 @@
-import { SyntheticEvent } from 'react';
-import { Observable, empty, merge } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, SyntheticEvent } from 'react';
+import { Observable, merge } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 type Source = [
   FileList | DataTransferItemList | null,
@@ -13,31 +12,40 @@ export interface RxFileToImageState {
   url: string;
 }
 
-export function useRxFileToImage(...source$: Array<Observable<Source>>) {
+function isFile(object: any): object is File {
+  return object instanceof File;
+}
+
+export function useRxFileToImage(
+  source$: Observable<Source> | Observable<Source>[]
+) {
   const [state, setState] = useState<RxFileToImageState>();
 
   useEffect(() => {
-    const subscription = merge(...source$)
+    const subscription = merge(
+      ...(Array.isArray(source$) ? source$ : [source$])
+    )
       .pipe(
-        map(([items, event]) => {
+        mergeMap(([items, event]) => {
+          const list: Observable<RxFileToImageState>[] = [];
           if (items && items.length) {
             for (let i = 0; i < items.length; i++) {
               const item = items[i];
               if (item.type.indexOf('image') !== -1) {
                 event.preventDefault();
-                return item instanceof File ? item : item.getAsFile();
+                const file = isFile(item) ? item : item.getAsFile();
+                if (file) {
+                  list.push(
+                    getBase64ImageURL(file).pipe(
+                      map<string, RxFileToImageState>(url => ({ url, file }))
+                    )
+                  );
+                }
               }
             }
           }
-          return null;
-        }),
-        switchMap(file =>
-          file
-            ? getBase64ImageURL(file).pipe(
-                map<string, RxFileToImageState>(url => ({ url, file }))
-              )
-            : empty()
-        )
+          return merge(...list);
+        })
       )
       .subscribe(setState);
 

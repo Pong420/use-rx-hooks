@@ -1,4 +1,4 @@
-import { ClipboardEvent, useRef } from 'react';
+import { ClipboardEvent, useRef, useMemo } from 'react';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useRxFileToImage } from './useRxFileToImage';
@@ -14,11 +14,17 @@ export function fromPasteImageEvent<T extends Window | Element>(
 
 export function useRxPasteImage<T extends Window | Element>() {
   const subject = useRef(new Subject<ClipboardEvent<T>>());
-  const onPaste = (event: ClipboardEvent<T>) => subject.current.next(event);
 
-  const state = useRxFileToImage(
-    subject.current.pipe(map(fromPasteImageEvent))
-  );
+  const [source$, props] = useMemo(() => {
+    return [
+      subject.current.pipe(map(fromPasteImageEvent)),
+      {
+        onPaste: (event: ClipboardEvent<T>) => subject.current.next(event),
+      },
+    ];
+  }, []);
 
-  return [state, { onPaste }] as const;
+  const state = useRxFileToImage(source$);
+
+  return [state, props] as const;
 }

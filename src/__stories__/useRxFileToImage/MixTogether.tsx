@@ -48,7 +48,7 @@ export const MixTogether = () => {
         <input type="file" ref={fileInputRef} hidden onChange={upload} />
         Click or Drop an image to here
       </div>
-      <Display image={image}></Display>
+      <Display payload={image}></Display>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
+import { RxFileToImageState } from '../../useRxFileToImage';
 
 interface Props {
-  image: any;
+  payload?: RxFileToImageState;
 }
 
 const style: CSSProperties = {
@@ -17,12 +18,12 @@ const imageContainerStyle: CSSProperties = {
   marginRight: 10,
 };
 
-export function Display({ image }: Props) {
-  const [images, setImages] = useState([]);
+export function Display({ payload }: Props) {
+  const [images, setImages] = useState<RxFileToImageState[]>([]);
 
   useEffect(() => {
-    image && setImages(curr => [...curr, image]);
-  }, [image]);
+    payload && setImages(curr => [...curr, payload]);
+  }, [payload]);
 
   return (
     <div>

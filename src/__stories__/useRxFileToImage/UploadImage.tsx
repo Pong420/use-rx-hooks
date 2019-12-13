@@ -7,8 +7,8 @@ export const UploadImage = () => {
 
   return (
     <>
-      <input type="file" {...props} />
-      <Display image={image}></Display>
+      <input type="file" multiple {...props} />
+      <Display payload={image}></Display>
     </>
   );
 };

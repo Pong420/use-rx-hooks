@@ -1,4 +1,4 @@
-import { DragEvent, useRef, useCallback } from 'react';
+import { DragEvent, useRef, useMemo } from 'react';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useRxFileToImage } from './useRxFileToImage';
@@ -18,11 +18,21 @@ export const preventDragOver = <T extends Window | Element>(
 
 export function useRxDropImage<T extends Window | Element>() {
   const subject = useRef(new Subject<DragEvent<T>>());
-  const onDrop = useCallback((event: DragEvent<T>) => {
-    subject.current.next(event);
-  }, []);
 
-  const state = useRxFileToImage(subject.current.pipe(map(fromDropImageEvent)));
+  const [source$, props] = useMemo(
+    () => [
+      subject.current.pipe(map(fromDropImageEvent)),
+      {
+        onDragOver: preventDragOver,
+        onDrop: (event: DragEvent<T>) => {
+          subject.current.next(event);
+        },
+      },
+    ],
+    []
+  );
 
-  return [state, { onDrop, onDragOver: preventDragOver }] as const;
+  const state = useRxFileToImage(source$);
+
+  return [state, props] as const;
 }

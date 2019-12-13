@@ -19,7 +19,7 @@ export const DropImage = () => {
       >
         Drop an image to here
       </div>
-      <Display image={image}></Display>
+      <Display payload={image}></Display>
     </>
   );
 };
