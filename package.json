@@ -1,6 +1,6 @@
 {
   "name": "use-rx-hooks",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -90,6 +90,6 @@
     ]
   },
   "dependencies": {
-    "use-rx-async": "^1.1.3"
+    "use-rx-async": "^1.1.5"
   }
 }
