@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRxAsync } from 'use-rx-async';
+import { useRxAsync } from '../../useRxAsync';
 import { useRxInputComposing } from '../../useRxInputComposing';
 
 const delay = (ms: number) => new Promise(_ => setTimeout(_, ms));
