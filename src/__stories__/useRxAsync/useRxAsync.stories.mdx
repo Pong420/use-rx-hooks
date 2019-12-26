@@ -1,5 +1,84 @@
 import { Meta, Story, Source } from '@storybook/addon-docs/blocks';
+import { Preview } from '../utils';
+
+import { Basic } from './Basic.tsx';
+import { DynamicParams } from './DynamicParams.tsx';
+import { Debounce } from './Debounce.tsx';
+import { Retry } from './Retry.tsx';
+
+import basicCode from '!!raw-loader!./Basic.tsx';
+import dynamicParamsCode from '!!raw-loader!./DynamicParams.tsx';
+import debounceCode from '!!raw-loader!./Debounce.tsx';
+import retryCode from '!!raw-loader!./Retry.tsx';
 
 <Meta title="useRxAsync" />
 
-Goto my other repo [useRxAsync](https://github.com/Pong420/useRxAsync)
+# useRxAsync
+
+Fetch data with React hooks and RxJS. Inspired by [react-async](https://github.com/async-library/react-async)
+
+```js
+const state = useRxAsync(asyncFn, options?);
+```
+
+## State
+
+| name    | description                                     |
+| ------- | ----------------------------------------------- |
+| data    | The value return from asyncFn                   |
+| loading | boolean                                         |
+| error   | any, depends on your asyncFn                    |
+| cancel  | ignore the new value return from your `asyncFn` |
+| reset   | reset data, loading, error to initialValue      |
+
+## AsyncFn
+
+A function that return `PromiseLike` or `Observable`. For examples,
+
+```js
+const delay = (ms: number) => new Promise(_ => setTimeout(_, ms));
+const rxAsyncFn = (result: string) => timer(1000).pipe(map(() => result));
+```
+
+## Options
+
+| option       | description                                                                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| initialValue | the initial value of `data`                                                                                                                              |
+| defer        | by default, your `asyncFn` will be call at initial or it changed. if you set `defer` to true, `asyncFn` will only call when you execute the `run` mehtod |
+| onStart      | callback when `asyncFn` start, () => void                                                                                                                |
+| onSuccess    | callback when `asyncFn` success, (result) => void                                                                                                        |
+| onFaulure    | callback when `asyncFn` failure, (error: any) => void                                                                                                    |
+| mapOperator  | switchMap, concatMap , exhaustMap , mergeMap , flatMap, default is switchMap                                                                             |
+
+## Basic
+
+<Preview name="Basic" code={basicCode}>
+  <Basic />
+</Preview>
+
+## AsyncFn with dynamic parameters
+
+<Preview name="DynamicParams" code={dynamicParamsCode}>
+  <DynamicParams />
+</Preview>
+
+## AsyncFn with RxJS opertators
+
+<br />
+
+### deboune
+
+Find a GitHub user's repositories
+
+<Preview name="Debounce" code={debounceCode}>
+  <Debounce />
+</Preview>
+
+### retry
+
+if the request has errors, delay 1 second then retry up to 3 times
+
+<Preview name="Retry" code={retryCode}>
+  <Retry />
+</Preview>
