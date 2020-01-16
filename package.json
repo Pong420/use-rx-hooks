@@ -1,6 +1,6 @@
 {
   "name": "use-rx-hooks",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Collection of React hooks with RxJS",
   "main": "lib/index.js",
   "module": "esm/index.js",

@@ -50,6 +50,7 @@ const rxAsyncFn = (result: string) => timer(1000).pipe(map(() => result));
 | onSuccess    | callback when `asyncFn` success, (result) => void                                                                                                        |
 | onFaulure    | callback when `asyncFn` failure, (error: any) => void                                                                                                    |
 | mapOperator  | switchMap, concatMap , exhaustMap , mergeMap , flatMap, default is switchMap                                                                             |
+| effect       | default is `React.useEffect`, you could use `React.useLayoutEffect` instead                                                                              |
 
 ## Basic
 

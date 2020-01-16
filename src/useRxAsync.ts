@@ -1,4 +1,11 @@
-import { useEffect, useReducer, useRef, useMemo, Reducer } from 'react';
+import {
+  useEffect,
+  useReducer,
+  useRef,
+  useMemo,
+  useLayoutEffect,
+  Reducer,
+} from 'react';
 import { from, ObservableInput, Subject, empty } from 'rxjs';
 import {
   exhaustMap,
@@ -32,6 +39,7 @@ export interface RxAsyncOptions<I> {
     | typeof exhaustMap
     | typeof mergeMap
     | typeof flatMap;
+  effect?: typeof useEffect | typeof useLayoutEffect;
 }
 
 interface RxAsyncStateCommon<I> extends State<I> {
@@ -134,6 +142,7 @@ export function useRxAsync<I, P>(
     onSuccess = defaultFn,
     onFailure = defaultFn,
     mapOperator = switchMap,
+    effect = useEffect,
   } = options;
 
   const [state, dispatch] = useReducer<
@@ -160,9 +169,8 @@ export function useRxAsync<I, P>(
     return { run, cancel, reset };
   }, []);
 
-  useEffect(() => {
+  effect(() => {
     reset();
-
     const subscription = subject.current
       .pipe(
         mapOperator(params => {
