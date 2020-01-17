@@ -17,19 +17,19 @@ import windowCode from '!!raw-loader!./Window.tsx';
 # useRxFileToImage
 
 ```js
-const [state?, props] = useRxFileToImage(source$);
+const image$ = useRxFileToImage(source$);
 
 // HOC of `useRxFileToImage`
-const [state?, props] = useRxUploadImage();
-const [state?, props] = useRxDropImage();
-const [state?, props] = useRxPasteImage();
+const [image$, props] = useRxUploadImage();
+const [image$, props] = useRxDropImage();
+const [image$, props] = useRxPasteImage();
 ```
 
 ## Typings
 
 ```js
 
-type Source = [
+export type RxFileToImageSource = [
   FileList | DataTransferItemList | null,
   Event | SyntheticEvent<Element | Window>
 ];
@@ -39,11 +39,11 @@ export interface RxFileToImageState {
   url: string;
 }
 
-export function useRxFileToImage(...source$: Array<Observable<Source>>): RxFileToImageState:
+export function useRxFileToImage(source$: Observable<RxFileToImageSource> | Array<Observable<RxFileToImageSource>>): Observable<RxFileToImageState>:
 
-export function useRxUploadImage(): [RxFileToImageState | undefined, { onChange }];
-export function useRxDropImage(): [RxFileToImageState | undefined, { onPaste }];
-export function useRxPasteImage(): [RxFileToImageState | undefined, { onDrop, onDragOver }];
+export function useRxUploadImage(): [Observable<RxFileToImageState>, { onChange }];
+export function useRxDropImage(): [Observable<RxFileToImageState>, { onPaste }];
+export function useRxPasteImage(): [Observable<RxFileToImageState>, { onDrop, onDragOver }];
 ```
 
 ## Upload Image

@@ -1,4 +1,10 @@
-import React, { useRef, ChangeEvent, ClipboardEvent, DragEvent } from 'react';
+import React, {
+  useRef,
+  ChangeEvent,
+  ClipboardEvent,
+  DragEvent,
+  useMemo,
+} from 'react';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useRxFileToImage } from '../../useRxFileToImage';
@@ -24,9 +30,14 @@ export const MixTogether = () => {
 
   const subject = useRef(new Subject<UploadEvent>());
 
-  const image = useRxFileToImage(subject.current.pipe(map(mapEvent)));
+  const { source$, upload } = useMemo(() => {
+    return {
+      source$: subject.current.pipe(map(mapEvent)),
+      upload: (event: UploadEvent) => subject.current.next(event),
+    };
+  }, []);
 
-  const upload = (event: UploadEvent) => subject.current.next(event);
+  const image$ = useRxFileToImage(source$);
 
   return (
     <div>
@@ -48,7 +59,7 @@ export const MixTogether = () => {
         <input type="file" ref={fileInputRef} hidden onChange={upload} />
         Click or Drop an image to here
       </div>
-      <Display payload={image}></Display>
+      <Display source$={image$}></Display>
     </div>
   );
 };

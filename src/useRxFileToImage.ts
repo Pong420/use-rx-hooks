@@ -1,8 +1,8 @@
-import { useEffect, useState, SyntheticEvent } from 'react';
+import { SyntheticEvent, useMemo } from 'react';
 import { Observable, merge } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
-type Source = [
+export type RxFileToImageSource = [
   FileList | DataTransferItemList | null,
   Event | SyntheticEvent<Element | Window>
 ];
@@ -16,46 +16,39 @@ function isFile(object: any): object is File {
   return object instanceof File;
 }
 
+export function fileToImage([items, event]: RxFileToImageSource) {
+  const list: Observable<RxFileToImageState>[] = [];
+  if (items && items.length) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type.indexOf('image') !== -1) {
+        event.preventDefault();
+        const file = isFile(item) ? item : item.getAsFile();
+        if (file) {
+          list.push(
+            getBase64ImageURL(file).pipe(
+              map<string, RxFileToImageState>(url => ({ url, file }))
+            )
+          );
+        }
+      }
+    }
+  }
+  return list;
+}
+
 export function useRxFileToImage(
-  source$: Observable<Source> | Observable<Source>[]
+  source$: Observable<RxFileToImageSource> | Observable<RxFileToImageSource>[]
 ) {
-  const [state, setState] = useState<RxFileToImageState>();
-
-  useEffect(() => {
-    const subscription = merge(
-      ...(Array.isArray(source$) ? source$ : [source$])
-    )
-      .pipe(
+  return useMemo<Observable<RxFileToImageState>>(
+    () =>
+      merge(...(Array.isArray(source$) ? source$ : [source$])).pipe(
         mergeMap(([items, event]) => {
-          const list: Observable<RxFileToImageState>[] = [];
-          if (items && items.length) {
-            for (let i = 0; i < items.length; i++) {
-              const item = items[i];
-              if (item.type.indexOf('image') !== -1) {
-                event.preventDefault();
-                const file = isFile(item) ? item : item.getAsFile();
-                if (file) {
-                  list.push(
-                    getBase64ImageURL(file).pipe(
-                      map<string, RxFileToImageState>(url => ({ url, file }))
-                    )
-                  );
-                }
-              }
-            }
-          }
-          return merge(...list);
+          return merge(...fileToImage([items, event]));
         })
-      )
-      .subscribe(setState);
-
-    return () => {
-      subscription.unsubscribe();
-      setState(undefined);
-    };
-  }, [source$]);
-
-  return state;
+      ),
+    [source$]
+  );
 }
 
 const getBase64ImageURL = (file: File) => {

@@ -1,7 +1,7 @@
-import { ChangeEvent, useRef, useMemo } from 'react';
+import { ChangeEvent, useMemo } from 'react';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { useRxFileToImage } from './useRxFileToImage';
+import { map, switchMap, mergeAll } from 'rxjs/operators';
+import { fileToImage } from './useRxFileToImage';
 
 export function fromChangeEvent(event: ChangeEvent<HTMLInputElement>) {
   return [event.target.files && event.target.files, event] as [
@@ -11,19 +11,21 @@ export function fromChangeEvent(event: ChangeEvent<HTMLInputElement>) {
 }
 
 export function useRxUploadImage() {
-  const subject = useRef(new Subject<ChangeEvent<HTMLInputElement>>());
-  const [source$, props] = useMemo(
-    () => [
-      subject.current.pipe(map(fromChangeEvent)),
+  const [source$, props] = useMemo(() => {
+    const subject = new Subject<ChangeEvent<HTMLInputElement>>();
+
+    return [
+      // prettier-ignore
+      subject.pipe(
+        map(fromChangeEvent),
+        switchMap(fileToImage),
+        mergeAll()
+      ),
       {
-        onChange: (event: ChangeEvent<HTMLInputElement>) =>
-          subject.current.next(event),
+        onChange: (event: ChangeEvent<HTMLInputElement>) => subject.next(event),
       },
-    ],
-    []
-  );
+    ];
+  }, []);
 
-  const state = useRxFileToImage(source$);
-
-  return [state, props] as const;
+  return [source$, props] as const;
 }

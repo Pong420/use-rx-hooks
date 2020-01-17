@@ -3,7 +3,7 @@ import { useRxDropImage } from '../../useRxDropImage';
 import { Display } from './Display';
 
 export const DropImage = () => {
-  const [image, props] = useRxDropImage();
+  const [image$, props] = useRxDropImage();
 
   return (
     <>
@@ -19,7 +19,7 @@ export const DropImage = () => {
       >
         Drop an image to here
       </div>
-      <Display payload={image}></Display>
+      <Display source$={image$}></Display>
     </>
   );
 };

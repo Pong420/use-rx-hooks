@@ -1,7 +1,7 @@
-import { DragEvent, useRef, useMemo } from 'react';
+import { DragEvent, useMemo } from 'react';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { useRxFileToImage } from './useRxFileToImage';
+import { map, mergeAll, switchMap } from 'rxjs/operators';
+import { fileToImage } from './useRxFileToImage';
 
 export function fromDropImageEvent<T extends Element | Window>(
   dragEvent: DragEvent<T>
@@ -17,22 +17,23 @@ export const preventDragOver = <T extends Window | Element>(
 ) => event.preventDefault();
 
 export function useRxDropImage<T extends Window | Element>() {
-  const subject = useRef(new Subject<DragEvent<T>>());
-
-  const [source$, props] = useMemo(
-    () => [
-      subject.current.pipe(map(fromDropImageEvent)),
+  const [source$, props] = useMemo(() => {
+    const subject = new Subject<DragEvent<T>>();
+    return [
+      // prettier-ignore
+      subject.pipe(
+        map(fromDropImageEvent),
+        switchMap(fileToImage),
+        mergeAll()
+      ),
       {
         onDragOver: preventDragOver,
         onDrop: (event: DragEvent<T>) => {
-          subject.current.next(event);
+          subject.next(event);
         },
       },
-    ],
-    []
-  );
+    ];
+  }, []);
 
-  const state = useRxFileToImage(source$);
-
-  return [state, props] as const;
+  return [source$, props] as const;
 }

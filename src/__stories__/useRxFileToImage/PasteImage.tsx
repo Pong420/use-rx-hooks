@@ -3,12 +3,12 @@ import { useRxPasteImage } from '../../useRxPasteImage';
 import { Display } from './Display';
 
 export const PasteImage = () => {
-  const [image, props] = useRxPasteImage();
+  const [image$, props] = useRxPasteImage();
 
   return (
     <>
       <input {...props} placeholder="Paste image here" />
-      <Display payload={image}></Display>
+      <Display source$={image$}></Display>
     </>
   );
 };

@@ -23,6 +23,6 @@ const drop$ = merge(
 const source$ = [paste$, drop$];
 
 export const Window = () => {
-  const image = useRxFileToImage(source$);
-  return <Display payload={image} />;
+  const image$ = useRxFileToImage(source$);
+  return <Display source$={image$} />;
 };

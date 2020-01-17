@@ -1,8 +1,9 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
+import { Observable } from 'rxjs';
 import { RxFileToImageState } from '../../useRxFileToImage';
 
 interface Props {
-  payload?: RxFileToImageState;
+  source$?: Observable<RxFileToImageState>;
 }
 
 const style: CSSProperties = {
@@ -18,12 +19,15 @@ const imageContainerStyle: CSSProperties = {
   marginRight: 10,
 };
 
-export function Display({ payload }: Props) {
+export function Display({ source$ }: Props) {
   const [images, setImages] = useState<RxFileToImageState[]>([]);
 
   useEffect(() => {
-    payload && setImages(curr => [...curr, payload]);
-  }, [payload]);
+    const subscription = source$.subscribe(payload =>
+      setImages(curr => [...curr, payload])
+    );
+    return () => subscription.unsubscribe();
+  }, [source$]);
 
   return (
     <div>
