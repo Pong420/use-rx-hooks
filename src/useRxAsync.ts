@@ -105,7 +105,7 @@ function reducer<I>(state: State<I>, action: Actions<I>): State<I> {
 const defaultFn = () => {};
 
 export function useRxAsync<I, P>(
-  fn: RxAsyncFnOptionalParam<I, P>,
+  fn: RxAsyncFnOptionalParam<I, P> | null,
   options: RxAsyncOptions<I> & {
     initialValue: I;
   }
@@ -120,7 +120,7 @@ export function useRxAsync<I, P>(
 ): RxAsyncStateWithParam<I, P> & { data: I };
 
 export function useRxAsync<I, P>(
-  fn: RxAsyncFnOptionalParam<I, P>,
+  fn: RxAsyncFnOptionalParam<I, P> | null,
   options?: RxAsyncOptions<I>
 ): RxAsyncStateOptionalParam<I, P>;
 
@@ -132,7 +132,7 @@ export function useRxAsync<I, P>(
 ): RxAsyncStateWithParam<I, P>;
 
 export function useRxAsync<I, P>(
-  fn: RxAsyncFn<I, P>,
+  fn: RxAsyncFn<I, P> | null,
   options: RxAsyncOptions<I> = {}
 ): RxAsyncState<I, P> {
   const {
@@ -171,29 +171,32 @@ export function useRxAsync<I, P>(
 
   effect(() => {
     reset();
-    const subscription = subject.current
-      .pipe(
-        mapOperator(params => {
-          onStart();
-          dispatch({ type: 'FETCH_INIT' });
-          return from<ObservableInput<I>>(fn(params)).pipe(
-            catchError(payload => {
-              onFailure(payload);
-              dispatch({ type: 'FETCH_FAILURE', payload });
-              return empty();
-            }),
-            takeUntil(cancelSubject.current)
-          );
-        })
-      )
-      .subscribe(payload => {
-        dispatch({ type: 'FETCH_SUCCESS', payload });
-        onSuccess(payload);
-      });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    if (fn) {
+      const subscription = subject.current
+        .pipe(
+          mapOperator(params => {
+            onStart();
+            dispatch({ type: 'FETCH_INIT' });
+            return from(fn(params)).pipe(
+              catchError(payload => {
+                onFailure(payload);
+                dispatch({ type: 'FETCH_FAILURE', payload });
+                return empty();
+              }),
+              takeUntil(cancelSubject.current)
+            );
+          })
+        )
+        .subscribe(payload => {
+          dispatch({ type: 'FETCH_SUCCESS', payload });
+          onSuccess(payload);
+        });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
   }, [fn, run, defer, reset, mapOperator, onStart, onSuccess, onFailure]);
 
   useEffect(() => {

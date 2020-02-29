@@ -363,3 +363,30 @@ describe('observable', () => {
     expect(onFailure).toHaveBeenCalledTimes(0);
   });
 });
+
+describe('allow passing null', () => {
+  test('basic', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => {
+      const [flag, setFlag] = useState(false);
+      const state = useRxAsync(flag ? request : null, { initialValue: 0 });
+      return {
+        ...state,
+        flag,
+        setFlag,
+      };
+    });
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.data).toBe(0);
+
+    act(() => result.current.setFlag(true));
+
+    expect(result.current.loading).toBe(true);
+
+    await waitForNextUpdate();
+
+    expect(result.current.flag).toBe(true);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.data).toBe(1);
+  });
+});
