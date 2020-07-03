@@ -6,7 +6,7 @@ import {
   useLayoutEffect,
   Reducer,
 } from 'react';
-import { from, ObservableInput, Subject, empty } from 'rxjs';
+import { defer as RxDefer, ObservableInput, Subject, empty } from 'rxjs';
 import {
   exhaustMap,
   switchMap,
@@ -178,7 +178,7 @@ export function useRxAsync<I, P>(
           mapOperator(params => {
             onStart();
             dispatch({ type: 'FETCH_INIT' });
-            return from(fn(params)).pipe(
+            return RxDefer(() => fn(params)).pipe(
               catchError(payload => {
                 onFailure(payload);
                 dispatch({ type: 'FETCH_FAILURE', payload });
