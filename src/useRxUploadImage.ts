@@ -1,6 +1,6 @@
 import { ChangeEvent, useMemo } from 'react';
-import { Subject } from 'rxjs';
-import { map, switchMap, mergeAll } from 'rxjs/operators';
+import { Subject, zip } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { fileToImage } from './useRxFileToImage';
 
 export function fromChangeEvent(event: ChangeEvent<HTMLInputElement>) {
@@ -15,11 +15,9 @@ export function useRxUploadImage() {
     const subject = new Subject<ChangeEvent<HTMLInputElement>>();
 
     return [
-      // prettier-ignore
       subject.pipe(
         map(fromChangeEvent),
-        switchMap(fileToImage),
-        mergeAll()
+        mergeMap(payload => zip(...fileToImage(payload)))
       ),
       {
         onChange: (event: ChangeEvent<HTMLInputElement>) => subject.next(event),

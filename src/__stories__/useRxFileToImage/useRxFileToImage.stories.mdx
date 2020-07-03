@@ -41,9 +41,9 @@ export interface RxFileToImageState {
 
 export function useRxFileToImage(source$: Observable<RxFileToImageSource> | Array<Observable<RxFileToImageSource>>): Observable<RxFileToImageState>:
 
-export function useRxUploadImage(): [Observable<RxFileToImageState>, { onChange }];
-export function useRxDropImage(): [Observable<RxFileToImageState>, { onPaste }];
-export function useRxPasteImage(): [Observable<RxFileToImageState>, { onDrop, onDragOver }];
+export function useRxUploadImage(): [Observable<RxFileToImageState[]>, { onChange }];
+export function useRxDropImage(): [Observable<RxFileToImageState[]>, { onPaste }];
+export function useRxPasteImage(): [Observable<RxFileToImageState[]>, { onDrop, onDragOver }];
 ```
 
 ## Upload Image

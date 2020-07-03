@@ -1,6 +1,6 @@
 import { DragEvent, useMemo } from 'react';
-import { Subject } from 'rxjs';
-import { map, mergeAll, switchMap } from 'rxjs/operators';
+import { Subject, zip } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { fileToImage } from './useRxFileToImage';
 
 export function fromDropImageEvent<T extends Element | Window>(
@@ -23,8 +23,7 @@ export function useRxDropImage<T extends Window | Element>() {
       // prettier-ignore
       subject.pipe(
         map(fromDropImageEvent),
-        switchMap(fileToImage),
-        mergeAll()
+        mergeMap(payload => zip(...fileToImage(payload)))
       ),
       {
         onDragOver: preventDragOver,

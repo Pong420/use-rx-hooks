@@ -1,5 +1,5 @@
 import { SyntheticEvent, useMemo } from 'react';
-import { Observable, merge } from 'rxjs';
+import { Observable, merge, zip, from } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
 export type RxFileToImageSource = [
@@ -26,7 +26,7 @@ export function fileToImage([items, event]: RxFileToImageSource) {
         const file = isFile(item) ? item : item.getAsFile();
         if (file) {
           list.push(
-            getBase64ImageURL(file).pipe(
+            from(getBase64ImageURL(file)).pipe(
               map<string, RxFileToImageState>(url => ({ url, file }))
             )
           );
@@ -40,19 +40,17 @@ export function fileToImage([items, event]: RxFileToImageSource) {
 export function useRxFileToImage(
   source$: Observable<RxFileToImageSource> | Observable<RxFileToImageSource>[]
 ) {
-  return useMemo<Observable<RxFileToImageState>>(
+  return useMemo<Observable<RxFileToImageState[]>>(
     () =>
       merge(...(Array.isArray(source$) ? source$ : [source$])).pipe(
-        mergeMap(([items, event]) => {
-          return merge(...fileToImage([items, event]));
-        })
+        mergeMap(([items, event]) => zip(...fileToImage([items, event])))
       ),
     [source$]
   );
 }
 
 const getBase64ImageURL = (file: File) => {
-  return new Observable<string>(observer => {
+  return new Promise<string>((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
@@ -61,10 +59,10 @@ const getBase64ImageURL = (file: File) => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx!.drawImage(img, 0, 0);
-      observer.next(canvas.toDataURL(file.type));
+      resolve(canvas.toDataURL(file.type));
     };
 
     img.src = URL.createObjectURL(file);
-    img.onerror = observer.error;
+    img.onerror = reject;
   });
 };

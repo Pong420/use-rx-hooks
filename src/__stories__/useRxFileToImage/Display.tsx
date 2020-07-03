@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { RxFileToImageState } from '../../useRxFileToImage';
 
 interface Props {
-  source$?: Observable<RxFileToImageState>;
+  source$?: Observable<RxFileToImageState[]>;
 }
 
 const style: CSSProperties = {
@@ -23,9 +23,9 @@ export function Display({ source$ }: Props) {
   const [images, setImages] = useState<RxFileToImageState[]>([]);
 
   useEffect(() => {
-    const subscription = source$.subscribe(payload =>
-      setImages(curr => [...curr, payload])
-    );
+    const subscription = source$.subscribe(payload => {
+      return setImages(curr => [...curr, ...payload]);
+    });
     return () => subscription.unsubscribe();
   }, [source$]);
 

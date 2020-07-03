@@ -1,6 +1,6 @@
 import { ClipboardEvent, useMemo } from 'react';
-import { Subject } from 'rxjs';
-import { map, switchMap, mergeAll } from 'rxjs/operators';
+import { Subject, zip } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { fileToImage } from './useRxFileToImage';
 
 export function fromPasteImageEvent<T extends Window | Element>(
@@ -18,8 +18,7 @@ export function useRxPasteImage<T extends Window | Element>() {
     return [
       subject.pipe(
         map(fromPasteImageEvent),
-        switchMap(fileToImage),
-        mergeAll()
+        mergeMap(payload => zip(...fileToImage(payload)))
       ),
       {
         onPaste: (event: ClipboardEvent<T>) => subject.next(event),
