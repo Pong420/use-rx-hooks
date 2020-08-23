@@ -17,7 +17,7 @@ function getPos(el: Window | Element): Pick<RxScrollState, 'x' | 'y'> {
 const initialState: RxScrollState = {
   x: 0,
   y: 0,
-  scrolling: false,
+  scrolling: false
 };
 
 export function useRxScroll<T extends Window | Element>(
@@ -35,7 +35,7 @@ export function useRxScroll<T extends Window | Element>(
       .pipe(
         map(event => ({
           ...getPos(event.currentTarget),
-          scrolling: true,
+          scrolling: true
         })),
         tap(state => setState(state)),
         debounceTime(150),

@@ -16,7 +16,7 @@ export function Basic() {
           overflow: 'scroll',
           position: 'absolute',
           width: '100%',
-          height: 300,
+          height: 300
         }}
       >
         <div style={{ width: 5000, height: 5000 }}></div>

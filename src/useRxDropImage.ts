@@ -8,7 +8,7 @@ export function fromDropImageEvent<T extends Element | Window>(
 ) {
   return [
     dragEvent.dataTransfer && dragEvent.dataTransfer.items,
-    dragEvent,
+    dragEvent
   ] as [DataTransferItemList | null, DragEvent<T>];
 }
 
@@ -29,8 +29,8 @@ export function useRxDropImage<T extends Window | Element>() {
         onDragOver: preventDragOver,
         onDrop: (event: DragEvent<T>) => {
           subject.next(event);
-        },
-      },
+        }
+      }
     ];
   }, []);
 

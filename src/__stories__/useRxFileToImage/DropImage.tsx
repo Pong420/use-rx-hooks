@@ -14,7 +14,7 @@ export const DropImage = () => {
           border: '1px dashed',
           color: '#ccc',
           textAlign: 'center',
-          padding: 30,
+          padding: 30
         }}
       >
         Drop an image to here

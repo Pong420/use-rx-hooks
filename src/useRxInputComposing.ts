@@ -5,7 +5,7 @@ import {
   useRxInput,
   RxInputOptions,
   RxInputPipe,
-  RxInputEl,
+  RxInputEl
 } from './useRxInput';
 
 interface InputProps<T>
@@ -54,7 +54,7 @@ export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>({
 
   const [value, inputProps] = useRxInput<O | string | undefined, T>({
     pipe: isComposing,
-    ...options,
+    ...options
   });
 
   const newProps = useMemo(() => {
@@ -65,7 +65,7 @@ export function useRxInputComposing<O, T extends RxInputEl = HTMLInputElement>({
     return {
       ...inputProps,
       onCompositionStart: handler(compositionStart$.current),
-      onCompositionEnd: handler(compositionEnd$.current),
+      onCompositionEnd: handler(compositionEnd$.current)
     };
   }, [inputProps]);
 

@@ -43,7 +43,7 @@ const [state, actions] = useRxAsync(asyncFn, options?);
 A function that return `PromiseLike` or `Observable`. For examples,
 
 ```js
-const delay = (ms: number) => new Promise((_) => setTimeout(_, ms));
+const delay = (ms: number) => new Promise(_ => setTimeout(_, ms));
 const rxAsyncFn = (result: string) => timer(1000).pipe(map(() => result));
 ```
 

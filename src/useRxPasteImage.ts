@@ -8,7 +8,7 @@ export function fromPasteImageEvent<T extends Window | Element>(
 ) {
   return [
     clipboardEvent.clipboardData && clipboardEvent.clipboardData.items,
-    clipboardEvent,
+    clipboardEvent
   ] as [DataTransferItemList | null, ClipboardEvent<T>];
 }
 
@@ -21,8 +21,8 @@ export function useRxPasteImage<T extends Window | Element>() {
         mergeMap(payload => zip(...fileToImage(payload)))
       ),
       {
-        onPaste: (event: ClipboardEvent<T>) => subject.next(event),
-      },
+        onPaste: (event: ClipboardEvent<T>) => subject.next(event)
+      }
     ];
   }, []);
 

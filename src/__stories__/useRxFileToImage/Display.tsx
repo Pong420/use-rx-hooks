@@ -10,13 +10,13 @@ const style: CSSProperties = {
   display: 'flex',
   marginTop: 10,
   backgroundColor: 'rgb(242, 242, 242)',
-  padding: 10,
+  padding: 10
 };
 
 const imageContainerStyle: CSSProperties = {
   alignSelf: 'center',
   maxWidth: 200,
-  marginRight: 10,
+  marginRight: 10
 };
 
 export function Display({ source$ }: Props) {
@@ -50,9 +50,9 @@ function clone({ file, ...rest }: any) {
         lastModified: file.lastModified,
         name: file.name,
         size: file.size,
-        type: file.type,
+        type: file.type
       },
-      ...rest,
+      ...rest
     };
   }
 

@@ -3,7 +3,7 @@ import React, {
   ChangeEvent,
   ClipboardEvent,
   DragEvent,
-  useMemo,
+  useMemo
 } from 'react';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -33,7 +33,7 @@ export const MixTogether = () => {
   const { source$, upload } = useMemo(() => {
     return {
       source$: subject.current.pipe(map(mapEvent)),
-      upload: (event: UploadEvent) => subject.current.next(event),
+      upload: (event: UploadEvent) => subject.current.next(event)
     };
   }, []);
 
@@ -53,7 +53,7 @@ export const MixTogether = () => {
           color: '#ccc',
           cursor: 'pointer',
           textAlign: 'center',
-          padding: 30,
+          padding: 30
         }}
       >
         <input type="file" ref={fileInputRef} hidden onChange={upload} />

@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import {
   Preview as PurePreview,
-  PreviewProps as PurePreviewProps,
+  PreviewProps as PurePreviewProps
 } from '@storybook/components';
 
 interface PreviewProps extends PurePreviewProps {
@@ -21,7 +21,7 @@ export const Preview = ({
     PurePreview,
     {
       withSource: { ...withSource, code, language },
-      ...props,
+      ...props
     },
     children
   );

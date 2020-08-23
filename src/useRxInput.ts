@@ -4,7 +4,7 @@ import {
   useState,
   ChangeEvent,
   useCallback,
-  InputHTMLAttributes,
+  InputHTMLAttributes
 } from 'react';
 import { Observable, Subject, pipe as rxPipe } from 'rxjs';
 import { map, startWith, tap } from 'rxjs/operators';
@@ -37,7 +37,7 @@ export function useRxInput<O, T extends RxInputEl = HTMLInputElement>(
 
 export function useRxInput<O, T extends RxInputEl = HTMLInputElement>({
   defaultValue = '',
-  pipe,
+  pipe
 }: RxInputOptions<O> = {}): State<O | string | undefined, T> {
   const subject = useRef(new Subject<ChangeEvent<T>>());
   const [value, setValue] = useState<string>(defaultValue);

@@ -20,8 +20,8 @@ export function useRxUploadImage() {
         mergeMap(payload => zip(...fileToImage(payload)))
       ),
       {
-        onChange: (event: ChangeEvent<HTMLInputElement>) => subject.next(event),
-      },
+        onChange: (event: ChangeEvent<HTMLInputElement>) => subject.next(event)
+      }
     ];
   }, []);
 
