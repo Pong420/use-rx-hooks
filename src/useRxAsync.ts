@@ -70,7 +70,6 @@ export type RxAsyncFn<I, P> = RxF1<I, P> | RxF2<I, P>;
 
 export type RxAsyncOptions<I> = {
   defer?: boolean;
-  initialValue?: I;
   onStart?(): void;
   onSuccess?(value: I): void;
   onFailure?(error: any): void;

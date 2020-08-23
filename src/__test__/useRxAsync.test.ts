@@ -141,7 +141,6 @@ test('state should reset before subscribe', async () => {
     const onSuccess = useCallback(() => flag, [flag]);
     const [state, actions] = useRxAsync(request, {
       defer: true,
-      initialValue: 0,
       onSuccess
     });
 
@@ -154,14 +153,14 @@ test('state should reset before subscribe', async () => {
     result.current.fetch();
   });
 
-  expect(result.current.data).toBe(0);
+  expect(result.current.data).toBe(undefined);
   expect(result.current.loading).toBe(true);
 
   act(() => {
     result.current.setFlag(curr => curr + 1);
   });
 
-  expect(result.current.data).toBe(0);
+  expect(result.current.data).toBe(undefined);
   expect(result.current.loading).toBe(false);
 });
 
@@ -236,7 +235,7 @@ test('reset', async () => {
   const onStart = jest.fn();
   const onSuccess = jest.fn();
   const onFailure = jest.fn();
-  const { result } = renderHook(() => useRxAsync(request, { initialValue: 0 }));
+  const { result } = renderHook(() => useRxAsync(request));
 
   act(() => {
     result.current[1].reset();
@@ -244,7 +243,7 @@ test('reset', async () => {
 
   expect(result.current[0].loading).toBe(false);
   expect(result.current[0].error).toBe(undefined);
-  expect(result.current[0].data).toBe(0);
+  expect(result.current[0].data).toBe(undefined);
   expect(onStart).toHaveBeenCalledTimes(0);
   expect(onSuccess).toHaveBeenCalledTimes(0);
   expect(onFailure).toHaveBeenCalledTimes(0);
