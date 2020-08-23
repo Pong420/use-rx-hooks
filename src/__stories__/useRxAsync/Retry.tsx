@@ -15,11 +15,11 @@ const request = () =>
               name,
               watch: data.watchers_count,
               star: data.stargazers_count,
-              fork: data.forks_count,
+              fork: data.forks_count
             };
           }
         })
-    : Promise.reject('Failed');
+    : Promise.reject('You may click the button to try again');
 
 const asyncFn = () =>
   from(request()).pipe(
@@ -34,12 +34,11 @@ const asyncFn = () =>
   );
 
 export function Retry() {
-  const state = useRxAsync(asyncFn, { defer: true });
-  const { run } = state;
+  const [state, { fetch }] = useRxAsync(asyncFn, { defer: true });
 
   return (
     <>
-      <button onClick={run}>Run</button>
+      <button onClick={fetch}>Run</button>
       <Display style={{ minHeight: 100 }} {...state}></Display>
     </>
   );

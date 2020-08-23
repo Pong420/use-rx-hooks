@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { from, Observable } from 'rxjs';
-import { debounceTime, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { switchMap, delay } from 'rxjs/operators';
 import { useRxAsync } from '../../useRxAsync';
 import { useRxInput } from '../../useRxInput';
 import { Display } from './Display';
@@ -17,18 +17,17 @@ const asyncFn = (username: string) =>
   new Observable<string>(subscriber => {
     subscriber.next(username);
   }).pipe(
-    debounceTime(1000),
-    switchMap(username => from(getGithubUserRepos(username)))
+    delay(1000),
+    switchMap(username => getGithubUserRepos(username))
   );
 
 export function Debounce() {
-  const state = useRxAsync(asyncFn, { defer: true });
+  const [state, { fetch }] = useRxAsync(asyncFn, { defer: true });
   const [username, props] = useRxInput();
-  const { run } = state;
 
   useEffect(() => {
-    username && run(username);
-  }, [username, run]);
+    username && fetch(username);
+  }, [username, fetch]);
 
   return (
     <>

@@ -10,10 +10,9 @@ const asyncFnWithParam = (result: string) =>
 export function DynamicParams() {
   const [value, props] = useRxInput();
 
-  const state1 = useRxAsync(asyncFnWithParam, { defer: true });
-  const run = state1.run;
+  const [state1, { fetch }] = useRxAsync(asyncFnWithParam, { defer: true });
 
-  useEffect(() => run(value), [run, value]);
+  useEffect(() => fetch(value), [fetch, value]);
 
   // or wrapper your `asyncFn` with `useCallback`
 

@@ -22,25 +22,25 @@ test('typings', async () => {
   );
   const caseD = renderHook(() => useRxAsync(requestWithoutParam));
 
-  act(() => caseA.result.current.run(1000));
+  act(() => caseA.result.current[1].fetch(1000));
   await caseA.waitForNextUpdate();
 
-  act(() => caseB.result.current.run(1000));
+  act(() => caseB.result.current[1].fetch(1000));
   await caseB.waitForNextUpdate();
 
-  act(() => caseC.result.current.run(1000));
+  act(() => caseC.result.current[1].fetch(1000));
   await caseC.waitForNextUpdate();
 
-  act(() => caseD.result.current.run(1000));
+  act(() => caseD.result.current[1].fetch(1000));
   await caseD.waitForNextUpdate();
 
-  act(() => caseB.result.current.run());
+  act(() => caseB.result.current[1].fetch());
   await caseB.waitForNextUpdate();
 
-  act(() => caseC.result.current.run());
+  act(() => caseC.result.current[1].fetch());
   await caseC.waitForNextUpdate();
 
-  act(() => caseD.result.current.run());
+  act(() => caseD.result.current[1].fetch());
   await caseD.waitForNextUpdate();
 });
 
@@ -53,12 +53,12 @@ test('basic', async () => {
     const [page, setPage] = useState(0);
     const request = useCallback(() => requestWithParam(page), [page]);
     const next = useCallback(() => setPage(page => page + 1), []);
-    const { data, ...reset } = useRxAsync(request, {
+    const [state] = useRxAsync(request, {
       onStart,
       onSuccess,
-      onFailure,
+      onFailure
     });
-    return { data, next, ...reset };
+    return { ...state, next };
   }
 
   const { result, waitForNextUpdate } = renderHook(() => useTest());
@@ -113,45 +113,45 @@ test('after failure', async () => {
     useRxAsync(controledRequest, { defer: true })
   );
 
-  act(() => result.current.run());
+  act(() => result.current[1].fetch());
 
-  expect(result.current.loading).toBe(true);
-
-  await waitForNextUpdate();
-
-  expect(result.current.loading).toBe(false);
-
-  act(() => result.current.run(true));
+  expect(result.current[0].loading).toBe(true);
 
   await waitForNextUpdate();
 
-  expect(result.current.loading).toBe(false);
+  expect(result.current[0].loading).toBe(false);
 
-  act(() => result.current.run());
+  act(() => result.current[1].fetch(true));
 
   await waitForNextUpdate();
 
-  expect(result.current.loading).toBe(false);
-  expect(result.current.data).toBe(1000);
+  expect(result.current[0].loading).toBe(false);
+
+  act(() => result.current[1].fetch());
+
+  await waitForNextUpdate();
+
+  expect(result.current[0].loading).toBe(false);
+  expect(result.current[0].data).toBe(1000);
 });
 
 test('state should reset before subscribe', async () => {
   function useShouldCleanUp() {
     const [flag, setFlag] = useState(0);
     const onSuccess = useCallback(() => flag, [flag]);
-    const state = useRxAsync(request, {
+    const [state, actions] = useRxAsync(request, {
       defer: true,
       initialValue: 0,
-      onSuccess,
+      onSuccess
     });
 
-    return { ...state, setFlag };
+    return { ...state, ...actions, setFlag };
   }
 
   const { result } = renderHook(() => useShouldCleanUp());
 
   act(() => {
-    result.current.run();
+    result.current.fetch();
   });
 
   expect(result.current.data).toBe(0);
@@ -170,17 +170,17 @@ test('defer', async () => {
     useRxAsync(request, { defer: true })
   );
 
-  expect(result.current.loading).toBe(false);
-  expect(result.current.error).toBe(undefined);
-  expect(result.current.data).toBe(undefined);
+  expect(result.current[0].loading).toBe(false);
+  expect(result.current[0].error).toBe(undefined);
+  expect(result.current[0].data).toBe(undefined);
 
   act(() => {
-    result.current.run();
+    result.current[1].fetch();
   });
 
   await waitForNextUpdate();
 
-  expect(result.current.data).toBe(1);
+  expect(result.current[0].data).toBe(1);
 });
 
 test('cancellation', async () => {
@@ -191,42 +191,42 @@ test('cancellation', async () => {
     useRxAsync(request, { onStart, onSuccess, onFailure })
   );
 
-  expect(result.current.data).toBe(undefined);
+  expect(result.current[0].data).toBe(undefined);
 
   act(() => {
-    result.current.cancel();
+    result.current[1].cancel();
   });
 
-  expect(result.current.loading).toBe(false);
-  expect(result.current.data).toBe(undefined);
+  expect(result.current[0].loading).toBe(false);
+  expect(result.current[0].data).toBe(undefined);
   expect(onStart).toHaveBeenCalledTimes(1);
   expect(onSuccess).toHaveBeenCalledTimes(0);
   expect(onFailure).toHaveBeenCalledTimes(0);
 
   act(() => {
-    result.current.run();
+    result.current[1].fetch();
   });
 
-  expect(result.current.loading).toBe(true);
+  expect(result.current[0].loading).toBe(true);
   expect(onStart).toHaveBeenCalledTimes(2);
   expect(onSuccess).toHaveBeenCalledTimes(0);
   expect(onFailure).toHaveBeenCalledTimes(0);
 
   await waitForNextUpdate();
 
-  expect(result.current.data).toBe(1);
+  expect(result.current[0].data).toBe(1);
   expect(onStart).toHaveBeenCalledTimes(2);
   expect(onSuccess).toHaveBeenCalledTimes(1);
   expect(onFailure).toHaveBeenCalledTimes(0);
 
   act(() => {
-    result.current.run();
-    result.current.cancel();
+    result.current[1].fetch();
+    result.current[1].cancel();
   });
 
   // After request cancelled, data should be same as before
-  expect(result.current.loading).toBe(false);
-  expect(result.current.data).toBe(1);
+  expect(result.current[0].loading).toBe(false);
+  expect(result.current[0].data).toBe(1);
   expect(onStart).toHaveBeenCalledTimes(3);
   expect(onSuccess).toHaveBeenCalledTimes(1);
   expect(onFailure).toHaveBeenCalledTimes(0);
@@ -239,22 +239,22 @@ test('reset', async () => {
   const { result } = renderHook(() => useRxAsync(request, { initialValue: 0 }));
 
   act(() => {
-    result.current.reset();
+    result.current[1].reset();
   });
 
-  expect(result.current.loading).toBe(false);
-  expect(result.current.error).toBe(undefined);
-  expect(result.current.data).toBe(0);
+  expect(result.current[0].loading).toBe(false);
+  expect(result.current[0].error).toBe(undefined);
+  expect(result.current[0].data).toBe(0);
   expect(onStart).toHaveBeenCalledTimes(0);
   expect(onSuccess).toHaveBeenCalledTimes(0);
   expect(onFailure).toHaveBeenCalledTimes(0);
 
   act(() => {
-    result.current.run();
+    result.current[1].fetch();
   });
 
   act(() => {
-    result.current.reset();
+    result.current[1].reset();
   });
 
   expect(onStart).toHaveBeenCalledTimes(0);
@@ -271,23 +271,23 @@ test('error', async () => {
       defer: true,
       onStart,
       onSuccess,
-      onFailure,
+      onFailure
     })
   );
 
-  act(() => result.current.run());
+  act(() => result.current[1].fetch());
 
   await waitForNextUpdate();
 
-  expect(result.current.error).toBe('error');
-  expect(result.current.loading).toBe(false);
-  expect(result.current.data).toBe(undefined);
+  expect(result.current[0].error).toBe('error');
+  expect(result.current[0].loading).toBe(false);
+  expect(result.current[0].data).toBe(undefined);
   expect(onSuccess).toHaveBeenCalledTimes(0);
   expect(onFailure).toHaveBeenCalledTimes(1);
 
-  act(() => result.current.run());
-  act(() => result.current.run());
-  act(() => result.current.run());
+  act(() => result.current[1].fetch());
+  act(() => result.current[1].fetch());
+  act(() => result.current[1].fetch());
 
   await waitForNextUpdate();
 
@@ -299,12 +299,12 @@ describe('observable', () => {
     const asyncFn = () => from(request());
     const { result, waitForNextUpdate } = renderHook(() => useRxAsync(asyncFn));
 
-    expect(result.current.loading).toBe(true);
+    expect(result.current[0].loading).toBe(true);
 
     await waitForNextUpdate();
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.data).toBe(1);
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].data).toBe(1);
   });
 
   test('retry', async () => {
@@ -327,11 +327,11 @@ describe('observable', () => {
       useRxAsync(asyncFn, { onStart, onSuccess, onFailure })
     );
 
-    expect(result.current.loading).toBe(true);
+    expect(result.current[0].loading).toBe(true);
 
     await waitForNextUpdate();
 
-    expect(result.current.loading).toBe(false);
+    expect(result.current[0].loading).toBe(false);
     expect(onStart).toHaveBeenCalledTimes(1);
     expect(onSuccess).toHaveBeenCalledTimes(0);
     expect(onFailure).toHaveBeenCalledTimes(1);
@@ -348,45 +348,18 @@ describe('observable', () => {
       useRxAsync(asyncFn, { defer: true, onStart, onSuccess, onFailure })
     );
 
-    act(() => result.current.run(1));
-    act(() => result.current.run(2));
-    act(() => result.current.run(3));
+    act(() => result.current[1].fetch(1));
+    act(() => result.current[1].fetch(2));
+    act(() => result.current[1].fetch(3));
 
-    expect(result.current.loading).toBe(true);
+    expect(result.current[0].loading).toBe(true);
 
     await waitForNextUpdate();
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.data).toBe(3);
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].data).toBe(3);
     expect(onStart).toHaveBeenCalledTimes(3);
     expect(onSuccess).toHaveBeenCalledTimes(1);
     expect(onFailure).toHaveBeenCalledTimes(0);
-  });
-});
-
-describe('allow passing null', () => {
-  test('basic', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => {
-      const [flag, setFlag] = useState(false);
-      const state = useRxAsync(flag ? request : null, { initialValue: 0 });
-      return {
-        ...state,
-        flag,
-        setFlag,
-      };
-    });
-
-    expect(result.current.loading).toBe(false);
-    expect(result.current.data).toBe(0);
-
-    act(() => result.current.setFlag(true));
-
-    expect(result.current.loading).toBe(true);
-
-    await waitForNextUpdate();
-
-    expect(result.current.flag).toBe(true);
-    expect(result.current.loading).toBe(false);
-    expect(result.current.data).toBe(1);
   });
 });

@@ -1,12 +1,5 @@
-import {
-  useEffect,
-  useReducer,
-  useRef,
-  useMemo,
-  useLayoutEffect,
-  Reducer,
-} from 'react';
-import { defer as RxDefer, ObservableInput, Subject, empty } from 'rxjs';
+import { useEffect, useReducer, useRef, useMemo, Reducer } from 'react';
+import { defer as RxDefer, ObservableInput, Subject, of } from 'rxjs';
 import {
   exhaustMap,
   switchMap,
@@ -15,21 +8,69 @@ import {
   flatMap,
   catchError,
   takeUntil,
+  filter,
+  tap,
+  map
 } from 'rxjs/operators';
 
-type RxAsyncFnWithParam<I, P> = (params: P) => ObservableInput<I>;
+interface State<I> {
+  data?: I;
+  error?: any;
+  loading: boolean;
+}
 
-type RxAsyncFnOptionalParam<I, P> =
-  | (() => ObservableInput<I>)
-  | ((params?: P) => ObservableInput<I>);
+export type RxAsyncInit<P> = { type: 'FETCH_INIT'; payload?: P };
+export type RxAsyncSuccess<I> = { type: 'FETCH_SUCCESS'; payload: I };
+export type RxAsyncFailure = { type: 'FETCH_FAILURE'; payload?: any };
+export type RxAsyncCancel = { type: 'CANCEL' };
+export type RxAsyncReset = { type: 'RESET' };
 
-export type RxAsyncFn<I, P> =
-  | RxAsyncFnOptionalParam<I, P>
-  | RxAsyncFnWithParam<I, P>;
+type Actions<I, P> =
+  | RxAsyncInit<P>
+  | RxAsyncSuccess<I>
+  | RxAsyncFailure
+  | RxAsyncCancel
+  | RxAsyncReset;
 
-export interface RxAsyncOptions<I> {
-  initialValue?: I;
+function initializerArg<I>(data?: I): State<I> {
+  return {
+    loading: false,
+    data
+  };
+}
+
+function reducer<I, P>(state: State<I>, action: Actions<I, P>): State<I> {
+  switch (action.type) {
+    case 'FETCH_INIT':
+      return {
+        ...initializerArg(state.data),
+        loading: true
+      };
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, data: action.payload };
+    case 'FETCH_FAILURE':
+      return { ...state, loading: false, error: action.payload };
+    case 'CANCEL':
+      return { ...state, loading: false };
+    case 'RESET':
+      return { ...initializerArg() };
+    default:
+      throw new Error();
+  }
+}
+
+const defaultFn = () => {};
+
+type F1<P, O> = (params: P) => O;
+type F2<P, O> = (() => O) | ((params?: P) => O);
+type RxF1<I, P> = F1<P, ObservableInput<I>>;
+type RxF2<I, P> = F2<P, ObservableInput<I>>;
+
+export type RxAsyncFn<I, P> = RxF1<I, P> | RxF2<I, P>;
+
+export type RxAsyncOptions<I> = {
   defer?: boolean;
+  initialValue?: I;
   onStart?(): void;
   onSuccess?(value: I): void;
   onFailure?(error: any): void;
@@ -39,169 +80,125 @@ export interface RxAsyncOptions<I> {
     | typeof exhaustMap
     | typeof mergeMap
     | typeof flatMap;
-  effect?: typeof useEffect | typeof useLayoutEffect;
-}
+};
 
-interface RxAsyncStateCommon<I> extends State<I> {
+export type RxAsyncActionsBase<I, P> = {
+  subject: Subject<Actions<I, P>>;
   cancel: () => void;
   reset: () => void;
-}
-
-type RxAsyncStateWithParam<I, P> = RxAsyncStateCommon<I> & {
-  run: (params: P) => void;
 };
 
-type RxAsyncStateOptionalParam<I, P> = RxAsyncStateCommon<I> & {
-  run: (() => void) | ((params?: P) => void);
-};
-
-export type RxAsyncState<I, P> =
-  | RxAsyncStateOptionalParam<I, P>
-  | RxAsyncStateWithParam<I, P>;
-
-interface State<I> {
-  loading: boolean;
-  error?: any;
-  data?: I;
-  initialValue?: I;
+export interface RxAsyncActionsWithParam<I, P>
+  extends RxAsyncActionsBase<I, P> {
+  fetch: F1<P, void>;
 }
 
-type Actions<I> =
-  | { type: 'FETCH_INIT' }
-  | { type: 'FETCH_SUCCESS'; payload: I }
-  | { type: 'FETCH_FAILURE'; payload?: any }
-  | { type: 'CANCEL' }
-  | { type: 'RESET' };
-
-function initializerArg<I>(data?: I): State<I> {
-  return {
-    loading: false,
-    data,
-    initialValue: data,
-  };
+export interface RxAsyncActionsOptionalParam<I, P>
+  extends RxAsyncActionsBase<I, P> {
+  fetch: F2<P, void>;
 }
 
-function reducer<I>(state: State<I>, action: Actions<I>): State<I> {
-  switch (action.type) {
-    case 'FETCH_INIT':
-      return {
-        ...initializerArg(state.data),
-        initialValue: state.initialValue,
-        loading: true,
-      };
-    case 'FETCH_SUCCESS':
-      return { ...state, loading: false, data: action.payload };
-    case 'FETCH_FAILURE':
-      return { ...state, loading: false, error: action.payload };
-    case 'CANCEL':
-      return { ...state, loading: false };
-    case 'RESET':
-      return { ...initializerArg(state.initialValue) };
-    default:
-      throw new Error();
-  }
-}
+export type RxAsyncState<I> = State<I>;
 
-const defaultFn = () => {};
+export type RxAsyncActions<I, P> =
+  | RxAsyncActionsWithParam<I, P>
+  | RxAsyncActionsOptionalParam<I, P>;
 
 export function useRxAsync<I, P>(
-  fn: RxAsyncFnOptionalParam<I, P> | null,
-  options: RxAsyncOptions<I> & {
-    initialValue: I;
-  }
-): RxAsyncStateOptionalParam<I, P> & { data: I };
+  request: RxF2<I, P>,
+  options?: RxAsyncOptions<I> & { defer?: boolean }
+): [RxAsyncState<I>, RxAsyncActionsOptionalParam<I, P>];
 
 export function useRxAsync<I, P>(
-  fn: RxAsyncFnWithParam<I, P>,
-  options: RxAsyncOptions<I> & {
-    initialValue: I;
-    defer: true;
-  }
-): RxAsyncStateWithParam<I, P> & { data: I };
+  request: RxF1<I, P>,
+  options: RxAsyncOptions<I> & { defer: true }
+): [RxAsyncState<I>, RxAsyncActionsWithParam<I, P>];
 
 export function useRxAsync<I, P>(
-  fn: RxAsyncFnOptionalParam<I, P> | null,
+  request: RxAsyncFn<I, P>,
   options?: RxAsyncOptions<I>
-): RxAsyncStateOptionalParam<I, P>;
-
-export function useRxAsync<I, P>(
-  fn: RxAsyncFnWithParam<I, P>,
-  options: RxAsyncOptions<I> & {
-    defer: true;
-  }
-): RxAsyncStateWithParam<I, P>;
-
-export function useRxAsync<I, P>(
-  fn: RxAsyncFn<I, P> | null,
-  options: RxAsyncOptions<I> = {}
-): RxAsyncState<I, P> {
+): [RxAsyncState<I>, RxAsyncActions<I, P>] {
   const {
     defer,
-    initialValue,
     onStart = defaultFn,
     onSuccess = defaultFn,
     onFailure = defaultFn,
-    mapOperator = switchMap,
-    effect = useEffect,
-  } = options;
+    mapOperator = switchMap
+  } = options || {};
 
-  const [state, dispatch] = useReducer<
-    Reducer<State<I>, Actions<I>>,
-    I | undefined
-  >(reducer, initialValue, initializerArg);
+  const [
+    //
+    state,
+    dispatch
+  ] = useReducer<Reducer<State<I>, Actions<I, P>>, I | undefined>(
+    reducer,
+    undefined,
+    initializerArg
+  );
 
-  const subject = useRef(new Subject<P>());
-  const cancelSubject = useRef(new Subject());
+  const actionRef = useRef(new Subject<Actions<I, P>>());
 
-  const { run, cancel, reset } = useMemo(() => {
-    const run = (params?: P) => subject.current.next(params as P);
-
-    const cancel = () => {
-      cancelSubject.current.next();
-      dispatch({ type: 'CANCEL' });
+  const actions = useMemo<RxAsyncActions<I, P>>(() => {
+    return {
+      fetch: (payload?: P) =>
+        actionRef.current.next({ type: 'FETCH_INIT', payload }),
+      reset: () => actionRef.current.next({ type: 'RESET' }),
+      cancel: () => actionRef.current.next({ type: 'CANCEL' }),
+      subject: actionRef.current
     };
-
-    const reset = () => {
-      cancelSubject.current.next();
-      dispatch({ type: 'RESET' });
-    };
-
-    return { run, cancel, reset };
   }, []);
 
-  effect(() => {
-    reset();
-
-    if (fn) {
-      const subscription = subject.current
-        .pipe(
-          mapOperator(params => {
-            onStart();
-            dispatch({ type: 'FETCH_INIT' });
-            return RxDefer(() => fn(params)).pipe(
-              catchError(payload => {
-                onFailure(payload);
-                dispatch({ type: 'FETCH_FAILURE', payload });
-                return empty();
-              }),
-              takeUntil(cancelSubject.current)
-            );
-          })
-        )
-        .subscribe(payload => {
-          dispatch({ type: 'FETCH_SUCCESS', payload });
-          onSuccess(payload);
-        });
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
-  }, [fn, run, defer, reset, mapOperator, onStart, onSuccess, onFailure]);
-
   useEffect(() => {
-    !defer && run();
-  }, [run, defer, fn]);
+    const action$ = <A extends Actions<I, P>>(...types: A['type'][]) =>
+      actionRef.current.pipe(
+        filter((action): action is A => types.includes(action.type))
+      );
 
-  return { ...state, run, cancel, reset };
+    const subscription = action$<RxAsyncInit<P>>('FETCH_INIT')
+      .pipe(
+        mapOperator(action =>
+          RxDefer(() => request(action.payload!)).pipe(
+            map<I, RxAsyncSuccess<I>>(payload => ({
+              type: 'FETCH_SUCCESS',
+              payload
+            })),
+            catchError(payload =>
+              of<RxAsyncFailure>({ type: 'FETCH_FAILURE', payload })
+            ),
+            takeUntil(action$<RxAsyncCancel | RxAsyncReset>('CANCEL', 'RESET'))
+          )
+        )
+      )
+      .subscribe(action => {
+        actionRef.current.next(action);
+      });
+
+    const actionSubscription = actionRef.current
+      .pipe(
+        tap(action => {
+          switch (action.type) {
+            case 'FETCH_INIT':
+              return onStart();
+            case 'FETCH_SUCCESS':
+              return onSuccess(action.payload);
+            case 'FETCH_FAILURE':
+              return onFailure(action.payload);
+          }
+        })
+      )
+      .subscribe(dispatch);
+
+    actionRef.current.next({ type: 'RESET' });
+
+    if (!defer) {
+      actionRef.current.next({ type: 'FETCH_INIT' });
+    }
+
+    return () => {
+      subscription.unsubscribe();
+      actionSubscription.unsubscribe();
+    };
+  }, [defer, request, actions, mapOperator, onStart, onSuccess, onFailure]);
+
+  return [state, actions];
 }

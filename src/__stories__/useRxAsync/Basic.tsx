@@ -15,17 +15,19 @@ const asyncFn = () =>
             name,
             watch: data.watchers_count,
             star: data.stargazers_count,
-            fork: data.forks_count,
+            fork: data.forks_count
           };
         }
       })
   );
 
 export function Basic() {
-  const state = useRxAsync(asyncFn);
+  const [state, actions] = useRxAsync(asyncFn);
   return (
     <>
-      <button onClick={state.run}>Reload</button>
+      <button onClick={actions.fetch}>Reload</button>
+      <button onClick={actions.cancel}>Cancel</button>
+      <button onClick={actions.cancel}>Cancel</button>
       <Display style={{ minHeight: 100 }} {...state} />
     </>
   );
