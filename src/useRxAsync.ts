@@ -32,10 +32,10 @@ type Actions<I, P> =
   | RxAsyncCancel
   | RxAsyncReset;
 
-function initializerArg<I>(data?: I): State<I> {
+function initializer<I>(state?: any): State<I> {
   return {
     loading: false,
-    data
+    ...state
   };
 }
 
@@ -43,7 +43,7 @@ function reducer<I, P>(state: State<I>, action: Actions<I, P>): State<I> {
   switch (action.type) {
     case 'FETCH_INIT':
       return {
-        ...initializerArg(state.data),
+        ...initializer(state),
         loading: true
       };
     case 'FETCH_SUCCESS':
@@ -53,7 +53,7 @@ function reducer<I, P>(state: State<I>, action: Actions<I, P>): State<I> {
     case 'CANCEL':
       return { ...state, loading: false };
     case 'RESET':
-      return { ...initializerArg() };
+      return { ...initializer() };
     default:
       throw new Error();
   }
@@ -125,15 +125,10 @@ export function useRxAsync<I, P>(
     mapOperator = switchMap
   } = options || {};
 
-  const [
-    //
-    state,
-    dispatch
-  ] = useReducer<Reducer<State<I>, Actions<I, P>>, I | undefined>(
-    reducer,
-    undefined,
-    initializerArg
-  );
+  const [state, dispatch] = useReducer<
+    Reducer<State<I>, Actions<I, P>>,
+    Partial<State<I>> | undefined
+  >(reducer, { loading: !defer }, initializer);
 
   const actionRef = useRef(new Subject<Actions<I, P>>());
 

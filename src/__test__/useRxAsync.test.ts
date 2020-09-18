@@ -164,7 +164,24 @@ test('state should reset before subscribe', async () => {
   expect(result.current.loading).toBe(false);
 });
 
-test('defer', async () => {
+test('defer is false or undefined', async () => {
+  const { result, waitForNextUpdate } = renderHook(() => useRxAsync(request));
+
+  expect(result.current[0].loading).toBe(true);
+  expect(result.current[0].error).toBe(undefined);
+  expect(result.current[0].data).toBe(undefined);
+
+  act(() => {
+    result.current[1].fetch();
+  });
+
+  await waitForNextUpdate();
+
+  expect(result.current[0].data).toBe(1);
+  expect(result.current[0].loading).toBe(false);
+});
+
+test('defer is ture', async () => {
   const { result, waitForNextUpdate } = renderHook(() =>
     useRxAsync(request, { defer: true })
   );
@@ -180,6 +197,7 @@ test('defer', async () => {
   await waitForNextUpdate();
 
   expect(result.current[0].data).toBe(1);
+  expect(result.current[0].loading).toBe(false);
 });
 
 test('cancellation', async () => {
