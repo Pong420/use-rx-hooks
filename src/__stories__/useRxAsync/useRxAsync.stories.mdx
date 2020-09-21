@@ -54,7 +54,7 @@ const rxAsyncFn = (result: string) => timer(1000).pipe(map(() => result));
 | defer       | by default, your `asyncFn` will be call at initial or it changed. if you set `defer` to true, `asyncFn` will only call when you execute the `run` mehtod |
 | onStart     | callback when `asyncFn` start, () => void                                                                                                                |
 | onSuccess   | callback when `asyncFn` success, (result) => void                                                                                                        |
-| onFaulure   | callback when `asyncFn` failure, (error: any) => void                                                                                                    |
+| onFailure   | callback when `asyncFn` failure, (error: any) => void                                                                                                    |
 | mapOperator | switchMap, concatMap , exhaustMap , mergeMap , flatMap, default is switchMap                                                                             |
 
 ## Basic
